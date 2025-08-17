@@ -18,8 +18,14 @@
   },
   "homepage": "https://github.com/Aadipawar07/Fraud-shield-#readme",
   "dependencies": {
+    "@huggingface/inference": "^4.7.1",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "^20.0.0",
+    "@react-native-community/cli-platform-android": "^20.0.0",
+    "@react-native-community/cli-platform-ios": "^20.0.0"
   }
 }

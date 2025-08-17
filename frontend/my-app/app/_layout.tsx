@@ -13,14 +13,15 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+    return null; // fonts load hone ka wait karega
   }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        {/* Ye app start hote hi (tabs) ko open karega */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {/* Agar galat route hua to ye screen */}
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
