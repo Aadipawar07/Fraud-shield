@@ -59,6 +59,9 @@ web_modules/
 # Optional REPL history
 .node_repl_history
 
+# Prevent secrets from being committed
+backend/token.env
+
 # Output of 'npm pack'
 *.tgz
 
