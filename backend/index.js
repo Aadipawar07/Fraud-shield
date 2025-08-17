@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { InferenceClient } from "@huggingface/inference";
-dotenv.config({path: './token.env'});
+dotenv.config({path: 'C:/Users/aadit/OneDriveDesktop/token.env'});
 const app = express();
 app.use(cors());
 app.use(express.json());
