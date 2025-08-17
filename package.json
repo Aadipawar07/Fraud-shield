@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/Aadipawar07/Fraud-shield-/issues"
   },
-  "homepage": "https://github.com/Aadipawar07/Fraud-shield-#readme"
+  "homepage": "https://github.com/Aadipawar07/Fraud-shield-#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
 }
