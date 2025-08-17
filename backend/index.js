@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { InferenceClient } from "@huggingface/inference";
+import fs from "fs";
+import path from "path";
 dotenv.config({path: './token.env'});
 const app = express();
 app.use(cors());
@@ -48,4 +50,9 @@ app.get("/", (req, res) => {
 });
 app.listen(5000, () => {
     console.log("✅ Backend running on http://localhost:5000");
+
 });
+
+// app.listen(PORT, 'localhost', () => {
+//     console.log(`✅ Backend running on http://localhost:${PORT}`);
+// });

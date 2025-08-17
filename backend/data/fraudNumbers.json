@@ -1,0 +1,16 @@
+{
+  "blacklistedNumbers": [
+    {
+      "id": "+919876543210",
+      "type": "phone",
+      "reason": "Reported for fraud by 120 users",
+      "reportCount": 120
+    },
+    {
+      "id": "@scammer123",
+      "type": "telegram",
+      "reason": "Reported for investment fraud by 85 users",
+      "reportCount": 85
+    }
+  ]
+}
