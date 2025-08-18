@@ -16,7 +16,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "READ_PHONE_STATE"
+      ]
     },
     "web": {
       "bundler": "metro",
