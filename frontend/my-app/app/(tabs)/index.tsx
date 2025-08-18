@@ -1,111 +1,178 @@
-// app/index.tsx
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from "react-native";
-import Toast from 'react-native-toast-message';
-import { checkMessageSafety } from "@/services/api";
+import React from "react";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 
-const BASE_URL = "http://localhost:5000"; // Update this with your backend URL
-
-export default function HomeScreen() {
-  const [message, setMessage] = useState("");
-  const [result, setResult] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleCheck = async () => {
-    if (!message.trim()) {
-      setResult("❌ Please enter a message to check.");
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Please enter a message to check.',
-        position: 'bottom'
-      });
-      return;
-    }
-    setLoading(true);
-    setResult(null);
-    try {
-      const res = await checkMessageSafety(message);
-      setResult(res.safe ? `✅ Safe: ${res.reason}` : `⚠️ Fraud: ${res.reason}`);
-      Toast.show({
-        type: res.safe ? 'success' : 'error',
-        text1: res.safe ? 'Message is Safe' : 'Potential Fraud Detected!',
-        text2: res.reason,
-        position: 'bottom'
-      });
-    } catch (error: any) {
-      const errorMessage = error.message || 'An error occurred while checking the message';
-      setResult(`❌ Error: ${errorMessage}`);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-        position: 'bottom'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = () => {
-    setMessage("");
-    setResult(null);
-    Toast.show({
-      type: 'info',
-      text1: 'Message Cleared',
-      text2: 'The message has been cleared successfully.',
-      position: 'bottom'
-    });
-  };
+const HomeScreen = () => {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <>
-      <View style={styles.container}>
-        <Text style={styles.title}>Fraud Message Checker</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom + 72) }}
+    >
+      {/* Header */}
+      <Text style={styles.header}>
+        🛡️ SMS Fraud Detector
+      </Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Enter a message..."
-          value={message}
-          onChangeText={setMessage}
-        />
+      {/* Last Scan Status */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>
+          Last SMS Scanned:
+        </Text>
+        <Text style={styles.statusSafe}>✅ Safe</Text>
 
-        <Button title="Check Safety" onPress={handleCheck} />
-        <View style={{ marginTop: 10 }}>
-          <Button title="Delete Message" color="#d9534f" onPress={handleDelete} />
-        </View>
-
-    {loading && <ActivityIndicator size="large" color="#0a7ea4" style={{ marginTop: 20 }} />}
-    {!loading && result && <Text style={styles.result}>{result}</Text>}
+        <TouchableOpacity
+          onPress={() => router.push("/scan")}
+          style={styles.scanButton}
+        >
+          <Text style={styles.scanButtonText}>
+            🔍 Scan Now
+          </Text>
+        </TouchableOpacity>
       </View>
-      <Toast />
-    </>
+
+      {/* Features Grid */}
+      <View style={styles.featuresGrid}>
+        <TouchableOpacity
+          onPress={() => router.push("/monitor")}
+          style={styles.featureCard}
+        >
+          <MaterialIcons name="sms" size={36} color="#2563eb" />
+          <Text style={styles.featureText}>
+            Monitor SMS
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push("/report")}
+          style={styles.featureCard}
+        >
+          <FontAwesome5 name="flag" size={30} color="#dc2626" />
+          <Text style={styles.featureText}>
+            Reports
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push("/verify")}
+          style={styles.featureCard}
+        >
+          <MaterialIcons name="verified-user" size={36} color="#16a34a" />
+          <Text style={styles.featureText}>
+            Verify
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Live Alerts */}
+      <View style={styles.alertCard}>
+        <Text style={styles.alertTitle}>
+          ⚠️ Suspicious SMS Detected
+        </Text>
+        <Text style={styles.alertText}>
+          "Your KYC is expiring, click this link..."
+        </Text>
+      </View>
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#111827',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
   },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-  },
-  result: {
-    marginTop: 20,
+  statusSafe: {
     fontSize: 16,
-    fontWeight: "600",
+    color: '#16a34a',
+    marginTop: 4,
+  },
+  scanButton: {
+    marginTop: 16,
+    backgroundColor: '#2563eb',
+    borderRadius: 12,
+    padding: 12,
+  },
+  scanButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  featureCard: {
+    backgroundColor: 'white',
+    width: '48%',
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  featureText: {
+    marginTop: 8,
+    color: '#1f2937',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  alertCard: {
+    backgroundColor: '#fef3c7',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  alertTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#92400e',
+  },
+  alertText: {
+    color: '#374151',
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });
+
+export default HomeScreen;

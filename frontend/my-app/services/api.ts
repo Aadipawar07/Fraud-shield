@@ -20,10 +20,15 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL ?? getApiBaseUrl();
 export interface FraudCheckResponse {
   safe: boolean;
   reason: string;
+  confidence?: number;
+  method?: string;
 }
 
 export async function checkMessageSafety(message: string): Promise<FraudCheckResponse> {
   try {
+    console.log(`Making API request to: ${API_URL}/fraud-check`);
+    console.log(`Message: ${message}`);
+    
     const response = await fetch(`${API_URL}/fraud-check`, {
       method: "POST",
       headers: {
@@ -36,14 +41,31 @@ export async function checkMessageSafety(message: string): Promise<FraudCheckRes
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data: { fraud: boolean; reason?: string } = await response.json();
+    const data: { 
+      fraud: boolean; 
+      reason?: string; 
+      confidence?: number; 
+      method?: string;
+      timestamp?: string;
+    } = await response.json();
+    
+    console.log('API Response:', data);
 
-    return {
+    const result = {
       safe: !data.fraud,
       reason: data.reason || "No reason provided",
+      confidence: data.confidence,
+      method: data.method,
     };
+    
+    console.log('Transformed result:', result);
+    
+    return result;
   } catch (error) {
     console.error("API error:", error);
-    return { safe: false, reason: "API error" };
+    return { 
+      safe: false, 
+      reason: "Failed to connect to fraud detection service. Please try again."
+    };
   }
 }
