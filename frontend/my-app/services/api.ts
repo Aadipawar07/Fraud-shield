@@ -1,5 +1,21 @@
 // services/api.ts
-const API_URL = "http://192.168.1.5:5000"; // sirf base URL rakho
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+
+const getApiBaseUrl = () => {
+  const hostUri = (Constants.expoConfig?.hostUri ?? "").toString();
+  if (hostUri) {
+    const host = hostUri.split(":")[0];
+    return `http://${host}:5000`;
+  }
+  if (typeof window !== "undefined" && (window as any)?.location?.hostname) {
+    return `http://${(window as any).location.hostname}:5000`;
+  }
+  if (Platform.OS === "android") return "http://10.0.2.2:5000";
+  return "http://localhost:5000";
+};
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL ?? getApiBaseUrl();
 
 export interface FraudCheckResponse {
   safe: boolean;
@@ -8,7 +24,7 @@ export interface FraudCheckResponse {
 
 export async function checkMessageSafety(message: string): Promise<FraudCheckResponse> {
   try {
-    const response = await fetch(`${API_URL}/fraud-check`, {   // ab sahi h
+    const response = await fetch(`${API_URL}/fraud-check`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
