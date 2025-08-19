@@ -30,9 +30,11 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "expo": "^53.0.20",
+    "expo-clipboard": "^7.1.5",
     "expo-linking": "~7.1.7",
     "expo-router": "^5.1.4",
     "express": "^5.1.0",
+    "firebase": "^12.1.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
     "react-native-android-sms-listener": "^0.8.0"

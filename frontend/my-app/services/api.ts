@@ -69,3 +69,25 @@ export async function checkMessageSafety(message: string): Promise<FraudCheckRes
     };
   }
 }
+
+export interface VerifyNumberResponse {
+  phoneNumber: string;
+  normalized: string;
+  isVerified: boolean;
+  riskLevel: string; // "low" | "medium" | "high"
+  status: string;
+  reportCount?: number;
+  matches?: Array<{ id: string; type: string; reason?: string; reportCount?: number }>
+}
+
+export async function verifyPhoneNumber(phoneNumber: string): Promise<VerifyNumberResponse> {
+  const response = await fetch(`${API_URL}/verify-number`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumber })
+  });
+  if (!response.ok) {
+    throw new Error(`Verification failed with status ${response.status}`);
+  }
+  return response.json();
+}

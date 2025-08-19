@@ -1,4 +1,5 @@
 import { Platform, PermissionsAndroid } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkMessageSafety } from './api';
 import Toast from 'react-native-toast-message';
@@ -39,6 +40,7 @@ class SMSMonitorService {
   private readonly FRAUD_SMS_KEY = 'fraud_sms_reports';
   private readonly SAFE_SMS_KEY = 'safe_sms_reports';
   private readonly SMS_STATS_KEY = 'sms_monitor_stats';
+  private readonly AUTO_START_KEY = 'sms_monitor_auto_start';
 
   constructor() {
     this.initializeService();
@@ -55,6 +57,16 @@ class SMSMonitorService {
       await this.loadStoredStats();
       this.isInitialized = true;
       console.log('SMS Monitor Service initialized');
+
+      // Auto-start if enabled
+      const auto = await this.getAutoStart();
+      if (auto && !this.isMonitoring) {
+        try {
+          await this.startMonitoring(this.onNewSMSCallback);
+        } catch (e) {
+          console.log('Auto-start monitoring failed:', e);
+        }
+      }
     } catch (error) {
       console.error('Failed to initialize SMS Monitor Service:', error);
     }
@@ -207,14 +219,6 @@ class SMSMonitorService {
         return;
       }
 
-      // Show toast for new SMS being processed
-      Toast.show({
-        type: 'info',
-        text1: '📱 New SMS Received',
-        text2: `From: ${smsMessage.sender}`,
-        visibilityTime: 2000,
-      });
-
       // Perform fraud detection
       console.log('Checking message for fraud:', smsMessage.message);
       const fraudResult = await checkMessageSafety(smsMessage.message);
@@ -233,8 +237,11 @@ class SMSMonitorService {
       // Store the message
       await this.storeSMSMessage(smsMessage);
 
-      // Show appropriate notification
+      // Notify only on fraud; provide haptic feedback
       if (smsMessage.isFraud) {
+        try {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        } catch {}
         Toast.show({
           type: 'error',
           text1: '🚨 FRAUD DETECTED',
@@ -243,12 +250,6 @@ class SMSMonitorService {
         });
         console.log('FRAUD DETECTED:', smsMessage);
       } else {
-        Toast.show({
-          type: 'success',
-          text1: '✅ Safe Message',
-          text2: `From: ${smsMessage.sender}`,
-          visibilityTime: 3000,
-        });
         console.log('Safe message processed:', smsMessage);
       }
 
@@ -300,6 +301,36 @@ class SMSMonitorService {
     } catch (error) {
       console.error('Failed to retrieve fraud reports:', error);
       return [];
+    }
+  }
+
+  async deleteFraudReport(id: string): Promise<void> {
+    try {
+      const data = await AsyncStorage.getItem(this.FRAUD_SMS_KEY);
+      const list: SMSMessage[] = data ? JSON.parse(data) : [];
+      const filtered = list.filter(item => item.id !== id);
+      await AsyncStorage.setItem(this.FRAUD_SMS_KEY, JSON.stringify(filtered));
+      // Adjust stats
+      if (this.state.fraudCount > 0) {
+        this.state.fraudCount -= 1;
+      }
+      if (this.state.processedCount > 0) {
+        this.state.processedCount -= 1;
+      }
+      await this.saveStats();
+    } catch (error) {
+      console.error('Failed to delete fraud report:', error);
+      throw error;
+    }
+  }
+
+  async exportFraudReports(): Promise<string> {
+    try {
+      const data = await AsyncStorage.getItem(this.FRAUD_SMS_KEY);
+      return data ?? '[]';
+    } catch (error) {
+      console.error('Failed to export fraud reports:', error);
+      return '[]';
     }
   }
 
@@ -359,6 +390,27 @@ class SMSMonitorService {
     }
   }
 
+  // Auto-start preference
+  async getAutoStart(): Promise<boolean> {
+    try {
+      const value = await AsyncStorage.getItem(this.AUTO_START_KEY);
+      return value === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  async setAutoStart(enabled: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(this.AUTO_START_KEY, enabled ? 'true' : 'false');
+      if (enabled && Platform.OS === 'android' && !this.isMonitoring) {
+        await this.startMonitoring(this.onNewSMSCallback);
+      }
+    } catch (error) {
+      console.error('Failed to set auto-start:', error);
+    }
+  }
+
   // Utility function to manually scan a message (for testing)
   async scanMessage(message: string, sender: string = 'Manual Test'): Promise<SMSMessage> {
     const smsMessage: SMSMessage = {
@@ -377,6 +429,24 @@ class SMSMonitorService {
     await this.storeSMSMessage(smsMessage);
 
     return smsMessage;
+  }
+
+  // Manually report a fraudulent message
+  async reportFraudManually(sender: string, message: string, additionalInfo?: string): Promise<SMSMessage> {
+    const sms: SMSMessage = {
+      id: Date.now().toString(),
+      sender: sender || 'UNKNOWN',
+      message: additionalInfo ? `${message}\n\nAdditional Info: ${additionalInfo}` : message,
+      timestamp: new Date().toISOString(),
+      isFraud: true,
+      fraudReason: 'User reported fraud',
+      confidence: 0.9,
+    };
+    await this.storeSMSMessage(sms);
+    this.state.fraudCount += 1;
+    this.state.processedCount += 1;
+    await this.saveStats();
+    return sms;
   }
 }
 
