@@ -139,6 +139,23 @@ export const signUpWithEmail = async (
     //   email, password, displayName, phoneNumber,
     // });
     
+    // Check if email is already registered
+    const existingUsers = await AsyncStorage.getItem('registeredUsers');
+    let users: {email: string; password: string; userData: UserData}[] = [];
+    
+    if (existingUsers) {
+      users = JSON.parse(existingUsers);
+      
+      // Check if email already exists
+      const existingUser = users.find(user => 
+        user.email.toLowerCase() === email.toLowerCase()
+      );
+      
+      if (existingUser) {
+        throw new Error('Email is already registered');
+      }
+    }
+    
     // For demo purposes, we'll generate a mock token
     const userId = generateUuid();
     const token = generateMockJwt({
@@ -159,7 +176,17 @@ export const signUpWithEmail = async (
       photoURL: null,
     };
     
+    // Store user in registered users list
+    users.push({
+      email: email,
+      password: password,
+      userData: userData
+    });
+    
+    await AsyncStorage.setItem('registeredUsers', JSON.stringify(users));
     await storeUserData(userData);
+    
+    console.log('User registered successfully:', userData);
     return userData;
   } catch (error) {
     throw error;
@@ -174,27 +201,37 @@ export const signInWithEmail = async (email: string, password: string) => {
     //   email, password,
     // });
     
-    // For demo purposes, we'll generate a mock token
-    const userId = generateUuid();
-    const token = generateMockJwt({
-      sub: userId,
-      name: "Demo User",
-      email: email,
-      exp: Math.floor(Date.now() / 1000) + 3600
-    });
+    // Check for existing users in local storage
+    // This simulates checking credentials against a database
+    const existingUsers = await AsyncStorage.getItem('registeredUsers');
+    let users: {email: string; password: string; userData: UserData}[] = [];
     
-    await storeToken(token);
+    if (existingUsers) {
+      users = JSON.parse(existingUsers);
+      
+      // Find user with matching email and password
+      const matchedUser = users.find(user => 
+        user.email.toLowerCase() === email.toLowerCase() && user.password === password
+      );
+      
+      if (matchedUser) {
+        // User exists, log them in with their stored data
+        const token = generateMockJwt({
+          sub: matchedUser.userData.uid,
+          name: matchedUser.userData.displayName || '',
+          email: matchedUser.userData.email || '',
+          phone: matchedUser.userData.phoneNumber || '',
+          exp: Math.floor(Date.now() / 1000) + 3600
+        });
+        
+        await storeToken(token);
+        await storeUserData(matchedUser.userData);
+        return matchedUser.userData;
+      }
+    }
     
-    const userData: UserData = {
-      uid: userId,
-      email: email,
-      displayName: "Demo User",
-      phoneNumber: null,
-      photoURL: null,
-    };
-    
-    await storeUserData(userData);
-    return userData;
+    // No matching user found
+    throw new Error('Invalid email or password');
   } catch (error) {
     throw error;
   }
@@ -282,10 +319,12 @@ export const verifyPhoneOTP = async (confirmation: any, code: string) => {
 // Sign Out
 export const signOut = async () => {
   try {
-    // Remove JWT token and user data
+    // Remove JWT token and user data, but keep registered users
     await AsyncStorage.removeItem('jwtToken');
     await AsyncStorage.removeItem('userData');
+    console.log('User signed out successfully');
   } catch (error) {
+    console.error('Error signing out:', error);
     throw error;
   }
 };
@@ -296,6 +335,20 @@ export const isAuthenticated = async (): Promise<boolean> => {
   if (!token) return false;
   
   return !isTokenExpired(token);
+};
+
+// Debug function to log registered users (development purposes only)
+export const logRegisteredUsers = async (): Promise<void> => {
+  try {
+    const registeredUsers = await AsyncStorage.getItem('registeredUsers');
+    if (registeredUsers) {
+      console.log('Currently registered users:', JSON.parse(registeredUsers));
+    } else {
+      console.log('No registered users found');
+    }
+  } catch (error) {
+    console.error('Error logging registered users:', error);
+  }
 };
 
 // Refresh token if needed

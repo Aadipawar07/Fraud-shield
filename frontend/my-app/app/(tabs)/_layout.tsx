@@ -23,6 +23,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          headerShown: false, // Hide header only for the home tab
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),

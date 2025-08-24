@@ -61,7 +61,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Function to login user
   const login = async (email: string, password: string) => {
     try {
-      await signInWithEmail(email, password);
+      console.log('Attempting to sign in with:', email);
+      const userData = await signInWithEmail(email, password);
+      console.log('Sign in successful:', userData);
       await loadUserData(); // Refresh user data after login
     } catch (error) {
       console.error('Error signing in:', error);
@@ -72,7 +74,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Function to register user
   const register = async (email: string, password: string, displayName: string, phoneNumber: string) => {
     try {
-      await signUpWithEmail(email, password, displayName, phoneNumber);
+      console.log('Registering new user:', email, displayName);
+      const userData = await signUpWithEmail(email, password, displayName, phoneNumber);
+      console.log('Registration successful:', userData);
       await loadUserData(); // Refresh user data after registration
     } catch (error) {
       console.error('Error registering:', error);

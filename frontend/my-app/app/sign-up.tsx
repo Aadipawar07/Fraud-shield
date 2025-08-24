@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Colors } from './../constants/Colors';
 import { useAuth } from '../context/AuthContext';
+import { logRegisteredUsers } from '../services/auth';
 
 function SignUp() {
   const [name, setName] = useState('');
@@ -37,12 +38,28 @@ function SignUp() {
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
+      
+      // Log registered users before registration
+      await logRegisteredUsers();
+      
+      // Register the user
       await register(email, password, name, phone);
+      
+      // Log registered users after registration
+      await logRegisteredUsers();
+      
+      // Navigate to main screen
       router.replace('/(tabs)');
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.message || 'Failed to create account');
     } finally {
       setLoading(false);

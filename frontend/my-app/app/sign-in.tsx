@@ -13,6 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {Colors} from './../constants/Colors';
 import { useAuth } from '../context/AuthContext';
+import { logRegisteredUsers } from '../services/auth';
 
 function SignIn() {
   const [email, setEmail] = useState('');
@@ -29,12 +30,25 @@ function SignIn() {
   }, [isLoggedIn]);
 
   const handleEmailSignIn = async () => {
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
+
+      // Log registered users before login attempt
+      await logRegisteredUsers();
+      
+      // Attempt to login
       await login(email, password);
+      
+      // Navigate to main screen on success
       router.replace('/(tabs)');
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.message || 'Failed to sign in');
     } finally {
       setLoading(false);
