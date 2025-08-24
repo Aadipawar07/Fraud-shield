@@ -3,15 +3,17 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const getApiBaseUrl = () => {
-  const hostUri = (Constants.expoConfig?.hostUri ?? "").toString();
-  if (hostUri) {
-    const host = hostUri.split(":")[0];
-    return `http://${host}:5000`;
+  // For Android Emulator, use 10.0.2.2 (special Android DNS)
+  if (Platform.OS === "android" && !__DEV__) {
+    return "http://10.0.2.2:5000";
   }
-  if (typeof window !== "undefined" && (window as any)?.location?.hostname) {
-    return `http://${(window as any).location.hostname}:5000`;
+  
+  // For physical devices, use your computer's IP address
+  if (Platform.OS === "android" || Platform.OS === "ios") {
+    return "http://192.168.1.5:5000";  // Replace with your computer's IP
   }
-  if (Platform.OS === "android") return "http://10.0.2.2:5000";
+
+  // For web or development
   return "http://localhost:5000";
 };
 
@@ -24,11 +26,13 @@ export interface FraudCheckResponse {
   method?: string;
 }
 
-export async function checkMessageSafety(message: string): Promise<FraudCheckResponse> {
+export async function checkMessageSafety(
+  message: string,
+): Promise<FraudCheckResponse> {
   try {
     console.log(`Making API request to: ${API_URL}/fraud-check`);
     console.log(`Message: ${message}`);
-    
+
     const response = await fetch(`${API_URL}/fraud-check`, {
       method: "POST",
       headers: {
@@ -41,15 +45,15 @@ export async function checkMessageSafety(message: string): Promise<FraudCheckRes
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data: { 
-      fraud: boolean; 
-      reason?: string; 
-      confidence?: number; 
+    const data: {
+      fraud: boolean;
+      reason?: string;
+      confidence?: number;
       method?: string;
       timestamp?: string;
     } = await response.json();
-    
-    console.log('API Response:', data);
+
+    console.log("API Response:", data);
 
     const result = {
       safe: !data.fraud,
@@ -57,15 +61,15 @@ export async function checkMessageSafety(message: string): Promise<FraudCheckRes
       confidence: data.confidence,
       method: data.method,
     };
-    
-    console.log('Transformed result:', result);
-    
+
+    console.log("Transformed result:", result);
+
     return result;
   } catch (error) {
     console.error("API error:", error);
-    return { 
-      safe: false, 
-      reason: "Failed to connect to fraud detection service. Please try again."
+    return {
+      safe: false,
+      reason: "Failed to connect to fraud detection service. Please try again.",
     };
   }
 }
@@ -77,14 +81,21 @@ export interface VerifyNumberResponse {
   riskLevel: string; // "low" | "medium" | "high"
   status: string;
   reportCount?: number;
-  matches?: Array<{ id: string; type: string; reason?: string; reportCount?: number }>
+  matches?: Array<{
+    id: string;
+    type: string;
+    reason?: string;
+    reportCount?: number;
+  }>;
 }
 
-export async function verifyPhoneNumber(phoneNumber: string): Promise<VerifyNumberResponse> {
+export async function verifyPhoneNumber(
+  phoneNumber: string,
+): Promise<VerifyNumberResponse> {
   const response = await fetch(`${API_URL}/verify-number`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phoneNumber })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phoneNumber }),
   });
   if (!response.ok) {
     throw new Error(`Verification failed with status ${response.status}`);

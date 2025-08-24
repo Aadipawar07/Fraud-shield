@@ -5,9 +5,11 @@
 Since Expo managed workflow doesn't support direct SMS access, you need to use one of these approaches:
 
 ### Option 1: Custom Development Build (Recommended)
+
 This allows you to keep using Expo services while adding native dependencies.
 
 ### Option 2: Eject to Bare React Native
+
 This gives you full control but you lose some Expo conveniences.
 
 ## Setup Instructions
@@ -15,16 +17,19 @@ This gives you full control but you lose some Expo conveniences.
 ### For Custom Development Build:
 
 1. **Install EAS CLI** (if not already installed):
+
    ```bash
    npm install -g eas-cli
    ```
 
 2. **Configure EAS Build**:
+
    ```bash
    eas build:configure
    ```
 
 3. **Create custom dev client**:
+
    ```bash
    eas build --platform android --profile development
    ```
@@ -39,11 +44,13 @@ This gives you full control but you lose some Expo conveniences.
 ### For Bare React Native (Alternative):
 
 1. **Eject from Expo**:
+
    ```bash
    npx expo eject
    ```
 
 2. **Install additional dependencies**:
+
    ```bash
    npx react-native link react-native-android-sms-listener
    ```
@@ -56,6 +63,7 @@ This gives you full control but you lose some Expo conveniences.
 ## Android Permissions Required
 
 The following permissions are automatically configured in app.json:
+
 - `READ_SMS`: To read SMS messages
 - `RECEIVE_SMS`: To listen for incoming SMS
 - `READ_PHONE_STATE`: To access device information
@@ -78,15 +86,18 @@ The following permissions are automatically configured in app.json:
 ## Troubleshooting
 
 ### Permission Issues
+
 - Make sure to allow SMS permissions when prompted
 - Check device settings if permissions were denied
 - Restart the app after granting permissions
 
 ### Library Issues
+
 - Ensure you're using a custom development build or bare React Native
 - The `react-native-android-sms-listener` package requires native code
 
 ### API Connection Issues
+
 - Make sure your backend is running on `http://localhost:5000`
 - Check network connectivity between device and backend
 

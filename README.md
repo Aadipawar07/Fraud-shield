@@ -29,6 +29,7 @@ Fraud-Shield/
 ## 🛠️ Setup Instructions
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm or yarn
 - Expo CLI (`npm install -g @expo/cli`)
@@ -37,16 +38,18 @@ Fraud-Shield/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Aadipawar07/Fraud-shield-.git
    cd Fraud-Shield
    ```
 
 2. **Install dependencies**
+
    ```bash
    # Install backend dependencies
    npm install
-   
+
    # Install frontend dependencies
    cd frontend/my-app
    npm install
@@ -60,6 +63,7 @@ Fraud-Shield/
 ### 🚀 Running the Application
 
 #### Option 1: Quick Start (PowerShell)
+
 ```powershell
 .\start-app.ps1
 ```
@@ -67,12 +71,14 @@ Fraud-Shield/
 #### Option 2: Manual Start
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd Fraud-Shield
 npm run backend
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd Fraud-Shield/frontend/my-app
 npm start
@@ -87,6 +93,7 @@ npm start
 ## 🧪 Testing the API
 
 ### Test Fraud Detection
+
 ```bash
 curl -X POST http://localhost:5000/fraud-check \
   -H "Content-Type: application/json" \
@@ -94,6 +101,7 @@ curl -X POST http://localhost:5000/fraud-check \
 ```
 
 ### Test Safe Message
+
 ```bash
 curl -X POST http://localhost:5000/fraud-check \
   -H "Content-Type: application/json" \
@@ -111,9 +119,11 @@ curl -X POST http://localhost:5000/fraud-check \
 ## 🔧 API Endpoints
 
 ### POST /fraud-check
+
 Analyze SMS message for fraud indicators
 
 **Request:**
+
 ```json
 {
   "message": "Your SMS text here"
@@ -121,6 +131,7 @@ Analyze SMS message for fraud indicators
 ```
 
 **Response:**
+
 ```json
 {
   "fraud": false,
@@ -139,6 +150,7 @@ Analyze SMS message for fraud indicators
 ## 🔍 Fraud Indicators
 
 The app detects common fraud patterns:
+
 - Prize/lottery scams
 - Urgent action required
 - Suspicious links
@@ -148,16 +160,19 @@ The app detects common fraud patterns:
 ## 🐛 Troubleshooting
 
 ### Backend Issues
+
 - Ensure Node.js is installed
 - Check HuggingFace API token in `backend/token.env`
 - Verify port 5000 is not in use
 
 ### Frontend Issues
+
 - Install Expo CLI: `npm install -g @expo/cli`
 - Clear cache: `npx expo start --clear`
 - Check network connectivity
 
 ### API Connection Issues
+
 - Ensure backend is running on port 5000
 - Check firewall settings
 - Verify CORS configuration

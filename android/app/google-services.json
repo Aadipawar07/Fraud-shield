@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "956455844546",
+    "project_id": "fraud-shield-07",
+    "storage_bucket": "fraud-shield-07.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956455844546:android:5c4d311438f281a9a1595b",
+        "android_client_info": {
+          "package_name": "com.fraudshield.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM9VeUYqL9pzWDkhF_LX3_HF6Ib19Bf68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

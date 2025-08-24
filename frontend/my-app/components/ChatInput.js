@@ -1,4 +1,3 @@
-
 import { checkMessageSafety } from "../services/api";
 
 async function handleSendMessage(text) {

@@ -48,15 +48,11 @@ export default function ScanScreen() {
     >
       <View style={styles.content}>
         {/* Header */}
-        <Text style={styles.header}>
-          🔍 SMS Fraud Scanner
-        </Text>
+        <Text style={styles.header}>🔍 SMS Fraud Scanner</Text>
 
         {/* Input Section */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>
-            Enter SMS Message:
-          </Text>
+          <Text style={styles.cardTitle}>Enter SMS Message:</Text>
           <TextInput
             style={styles.textInput}
             multiline
@@ -71,20 +67,16 @@ export default function ScanScreen() {
             disabled={isLoading || !message.trim()}
             style={[
               styles.scanButton,
-              (isLoading || !message.trim()) && styles.scanButtonDisabled
+              (isLoading || !message.trim()) && styles.scanButtonDisabled,
             ]}
           >
             {isLoading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator color="white" size="small" />
-                <Text style={styles.loadingText}>
-                  Scanning...
-                </Text>
+                <Text style={styles.loadingText}>Scanning...</Text>
               </View>
             ) : (
-              <Text style={styles.scanButtonText}>
-                🔍 Scan for Fraud
-              </Text>
+              <Text style={styles.scanButtonText}>🔍 Scan for Fraud</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -94,13 +86,13 @@ export default function ScanScreen() {
           <View
             style={[
               styles.resultCard,
-              result.safe ? styles.resultCardSafe : styles.resultCardDanger
+              result.safe ? styles.resultCardSafe : styles.resultCardDanger,
             ]}
           >
             <Text
               style={[
                 styles.resultTitle,
-                result.safe ? styles.resultTitleSafe : styles.resultTitleDanger
+                result.safe ? styles.resultTitleSafe : styles.resultTitleDanger,
               ]}
             >
               {result.safe ? "✅ Message is Safe" : "⚠️ Fraud Detected"}
@@ -109,12 +101,14 @@ export default function ScanScreen() {
             <Text
               style={[
                 styles.resultReason,
-                result.safe ? styles.resultReasonSafe : styles.resultReasonDanger
+                result.safe
+                  ? styles.resultReasonSafe
+                  : styles.resultReasonDanger,
               ]}
             >
               {result.reason}
             </Text>
-            
+
             {result.confidence && (
               <Text style={styles.confidenceText}>
                 Confidence: {(result.confidence * 100).toFixed(1)}%
@@ -122,22 +116,15 @@ export default function ScanScreen() {
               </Text>
             )}
 
-            <TouchableOpacity
-              onPress={clearResult}
-              style={styles.clearButton}
-            >
-              <Text style={styles.clearButtonText}>
-                Scan Another Message
-              </Text>
+            <TouchableOpacity onPress={clearResult} style={styles.clearButton}>
+              <Text style={styles.clearButtonText}>Scan Another Message</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {/* Example Messages */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>
-            📋 Test Examples:
-          </Text>
+          <Text style={styles.cardTitle}>📋 Test Examples:</Text>
           <Text style={styles.exampleText}>
             • "Congratulations! You've won $1000! Click here to claim..."
           </Text>
@@ -156,24 +143,24 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
   },
   content: {
     padding: 24,
   },
   header: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111827',
+    fontWeight: "bold",
+    color: "#111827",
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   card: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -181,13 +168,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#374151',
+    fontWeight: "600",
+    color: "#374151",
     marginBottom: 12,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
@@ -195,28 +182,28 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   scanButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     borderRadius: 12,
     padding: 16,
     marginTop: 16,
   },
   scanButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: "#9ca3af",
   },
   scanButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: '600',
+    color: "white",
+    textAlign: "center",
+    fontWeight: "600",
     fontSize: 16,
   },
   loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
     fontSize: 16,
     marginLeft: 8,
   },
@@ -224,61 +211,61 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   resultCardSafe: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: "#f0fdf4",
   },
   resultCardDanger: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: "#fef2f2",
   },
   resultTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   resultTitleSafe: {
-    color: '#166534',
+    color: "#166534",
   },
   resultTitleDanger: {
-    color: '#991b1b',
+    color: "#991b1b",
   },
   resultReason: {
     fontSize: 16,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   resultReasonSafe: {
-    color: '#15803d',
+    color: "#15803d",
   },
   resultReasonDanger: {
-    color: '#dc2626',
+    color: "#dc2626",
   },
   clearButton: {
-    backgroundColor: '#4b5563',
+    backgroundColor: "#4b5563",
     borderRadius: 12,
     padding: 12,
   },
   clearButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: '600',
+    color: "white",
+    textAlign: "center",
+    fontWeight: "600",
   },
   exampleText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: "#6b7280",
     marginBottom: 8,
   },
   confidenceText: {
     fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
+    color: "#6b7280",
+    textAlign: "center",
     marginBottom: 8,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 });

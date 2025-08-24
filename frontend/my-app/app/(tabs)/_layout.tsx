@@ -60,7 +60,11 @@ export default function TabLayout() {
         options={{
           title: "Verify",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="shield-checkmark-outline" size={size} color={color} />
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
