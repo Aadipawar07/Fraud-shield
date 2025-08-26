@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 8px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .fraud {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .safe {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .sample {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .loading {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fraud Detection API Tester</h1>
+    <p>Enter a message to test the fraud detection API:</p>
+    
+    <textarea id="messageInput" placeholder="Enter message here..."></textarea>
+    <button id="testButton" onclick="testMessage()">Test Message</button>
+    <span id="loading" class="loading" style="display: none;">Testing...</span>
+
+    <h3>Sample Messages:</h3>
+    <div class="sample" onclick="useSample(this)">CONGRATULATIONS! You've won $5,000 in our lottery. To claim your prize, send $100 processing fee to account 12345.</div>
+    <div class="sample" onclick="useSample(this)">Your account has been suspended. Please verify your details at http://fake-bank.scam/verify</div>
+    <div class="sample" onclick="useSample(this)">Hey, can you pick up milk on your way home? Thanks!</div>
+    <div class="sample" onclick="useSample(this)">Your monthly bank statement is now available. Please log in to your account to view it.</div>
+
+    <div id="result" class="result" style="display: none;">
+        <h3>Results:</h3>
+        <pre id="resultContent"></pre>
+    </div>
+
+    <script>
+        function useSample(element) {
+            document.getElementById('messageInput').value = element.textContent;
+        }
+
+        function testMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (!message) {
+                alert('Please enter a message to test.');
+                return;
+            }
+
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'inline-block';
+            document.getElementById('testButton').disabled = true;
+            document.getElementById('result').style.display = 'none';
+
+            // Make API call to the fraud detection endpoint
+            fetch('http://localhost:3002/detect', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`API returned status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayResult(data);
+            })
+            .catch(error => {
+                displayError(error);
+            })
+            .finally(() => {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('testButton').disabled = false;
+            });
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultDiv.style.display = 'block';
+            
+            let html = '';
+            
+            if (data.classification) {
+                const classStyle = data.classification === 'FRAUD' ? 'fraud' : 'safe';
+                
+                html += `<div><strong>Classification:</strong> <span class="${classStyle}">${data.classification}</span></div>`;
+                html += `<div><strong>Confidence Score:</strong> ${(data.confidence_score * 100).toFixed(1)}%</div>`;
+                html += `<div><strong>Reason:</strong> ${data.reason}</div>`;
+                
+                if (data.note) {
+                    html += `<div><strong>Note:</strong> ${data.note}</div>`;
+                }
+            } else {
+                html += `<div>Raw response:</div>`;
+                html += `<div>${JSON.stringify(data, null, 2)}</div>`;
+            }
+            
+            resultContent.innerHTML = html;
+        }
+
+        function displayError(error) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultDiv.style.display = 'block';
+            resultContent.innerHTML = `<div class="fraud">Error: ${error.message}</div>`;
+        }
+    </script>
+</body>
+</html>

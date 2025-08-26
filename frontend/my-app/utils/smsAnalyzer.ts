@@ -490,16 +490,16 @@ export async function detectFraud(message: string): Promise<FraudDetectionRespon
       const platform = require('react-native').Platform;
       // For Android Emulator, use 10.0.2.2 (special Android DNS)
       if (platform.OS === "android" && !__DEV__) {
-        return "http://10.0.2.2:5000";
+        return "http://10.0.2.2:3002";
       }
       
       // For physical devices, use your computer's IP address
       if (platform.OS === "android" || platform.OS === "ios") {
-        return "http://192.168.1.5:5000";  // Replace with your computer's IP
+        return "http://192.168.1.5:3002";  // Replace with your computer's IP
       }
       
       // For web or development
-      return "http://localhost:5000";
+      return "http://localhost:3002";
     };
     
     const API_URL = process.env.EXPO_PUBLIC_API_URL ?? getApiBaseUrl();

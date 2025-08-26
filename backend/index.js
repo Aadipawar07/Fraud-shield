@@ -6,6 +6,22 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+// Enable CORS for React Native app
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// Add a test route
+app.get('/', (req, res) => {
+  res.json({ message: 'Fraud Shield API is running!' });
+});
+
 // Define port for the server
 const PORT = 3002; // Using port 3002 since 3001 is already in use
 

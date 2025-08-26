@@ -5,16 +5,16 @@ import { Platform } from "react-native";
 const getApiBaseUrl = () => {
   // For Android Emulator, use 10.0.2.2 (special Android DNS)
   if (Platform.OS === "android" && !__DEV__) {
-    return "http://10.0.2.2:5000";
+    return "http://10.0.2.2:3002";
   }
   
   // For physical devices, use your computer's IP address
   if (Platform.OS === "android" || Platform.OS === "ios") {
-    return "http://192.168.1.5:5000";  // Replace with your computer's IP
+    return "http://192.168.1.5:3002";  // Replace with your computer's IP
   }
 
   // For web or development
-  return "http://localhost:5000";
+  return "http://localhost:3002";
 };
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? getApiBaseUrl();
@@ -30,10 +30,10 @@ export async function checkMessageSafety(
   message: string,
 ): Promise<FraudCheckResponse> {
   try {
-    console.log(`Making API request to: ${API_URL}/fraud-check`);
+    console.log(`Making API request to: ${API_URL}/detect`);
     console.log(`Message: ${message}`);
 
-    const response = await fetch(`${API_URL}/fraud-check`, {
+    const response = await fetch(`${API_URL}/detect`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,21 +45,16 @@ export async function checkMessageSafety(
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data: {
-      fraud: boolean;
-      reason?: string;
-      confidence?: number;
-      method?: string;
-      timestamp?: string;
-    } = await response.json();
+    const data = await response.json();
 
     console.log("API Response:", data);
 
+    // Handle the structure from our backend API
     const result = {
-      safe: !data.fraud,
+      safe: data.classification !== "FRAUD",
       reason: data.reason || "No reason provided",
-      confidence: data.confidence,
-      method: data.method,
+      confidence: data.confidence_score || 0.5,
+      method: data.note || "API Detection",
     };
 
     console.log("Transformed result:", result);
