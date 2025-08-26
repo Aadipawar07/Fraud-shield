@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { checkMessageSafety, FraudCheckResponse } from "../../services/api";
+import { formatConfidencePercentage } from "../../utils/formatters";
 
 export default function ScanScreen() {
   const [message, setMessage] = useState("");
@@ -111,7 +112,7 @@ export default function ScanScreen() {
 
             {result.confidence && (
               <Text style={styles.confidenceText}>
-                Confidence: {(result.confidence * 100).toFixed(1)}%
+                Confidence: {formatConfidencePercentage(result.confidence)}
                 {result.method && ` | Method: ${result.method}`}
               </Text>
             )}

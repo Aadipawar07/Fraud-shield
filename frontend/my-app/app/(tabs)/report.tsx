@@ -10,6 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatConfidencePercentage } from "../../utils/formatters";
 import smsMonitorService, { SMSMessage } from "../../services/smsMonitor";
 
 export default function ReportScreen() {
@@ -84,7 +85,7 @@ export default function ReportScreen() {
   const shareReport = async (r: SMSMessage) => {
     try {
       await Share.share({
-        message: `Fraud Report\nFrom: ${r.sender}\nWhen: ${new Date(r.timestamp).toLocaleString()}\nReason: ${r.fraudReason ?? "N/A"}\n${r.confidence ? `Confidence: ${(r.confidence * 100).toFixed(1)}%\n` : ""}Message: ${r.message}`,
+        message: `Fraud Report\nFrom: ${r.sender}\nWhen: ${new Date(r.timestamp).toLocaleString()}\nReason: ${r.fraudReason ?? "N/A"}\n${r.confidence ? `Confidence: ${formatConfidencePercentage(r.confidence)}\n` : ""}Message: ${r.message}`,
       });
     } catch {}
   };
@@ -267,7 +268,7 @@ export default function ReportScreen() {
                       )}
                       {report.confidence && (
                         <Text style={styles.detailConfidence}>
-                          Confidence: {(report.confidence * 100).toFixed(1)}%
+                          Confidence: {formatConfidencePercentage(report.confidence)}
                         </Text>
                       )}
                     </View>

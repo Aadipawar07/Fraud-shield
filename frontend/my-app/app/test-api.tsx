@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
 import { checkMessageSafety, FraudCheckResponse } from "../services/api";
+import { formatConfidencePercentage } from "../utils/formatters";
 
 // Define the result type
 interface TestResult {
@@ -75,7 +76,7 @@ export default function TestApiScreen() {
           <Text style={styles.reasonText}>{item.result.reason}</Text>
           {item.result.confidence && (
             <Text style={styles.confidenceText}>
-              Confidence: {(item.result.confidence * 100).toFixed(1)}%
+              Confidence: {formatConfidencePercentage(item.result.confidence)}
             </Text>
           )}
         </View>

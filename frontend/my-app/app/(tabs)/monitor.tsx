@@ -12,6 +12,7 @@ import {
   Share,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatConfidencePercentage } from "../../utils/formatters";
 import smsMonitorService, {
   SMSMessage,
   SMSMonitorState,
@@ -512,7 +513,7 @@ export default function MonitorScreen() {
                     </Text>
                     {sms.confidence && (
                       <Text style={styles.confidenceText}>
-                        Confidence: {(sms.confidence * 100).toFixed(1)}%
+                        Confidence: {formatConfidencePercentage(sms.confidence)}
                       </Text>
                     )}
                   </View>

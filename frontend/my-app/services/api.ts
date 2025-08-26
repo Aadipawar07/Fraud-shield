@@ -53,7 +53,10 @@ export async function checkMessageSafety(
     const result = {
       safe: data.classification !== "FRAUD",
       reason: data.reason || "No reason provided",
-      confidence: data.confidence_score || 0.5,
+      // Ensure confidence_score is in the 0-1 range
+      confidence: (data.confidence_score && typeof data.confidence_score === 'number') 
+        ? (data.confidence_score > 1 ? data.confidence_score / 100 : data.confidence_score) 
+        : 0.5,
       method: data.note || "API Detection",
     };
 
