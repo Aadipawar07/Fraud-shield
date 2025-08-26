@@ -1,0 +1,10 @@
+{
+  "android": {
+    "package": "com.aadipawar.fraudshield"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "545a24cc-7a5f-441b-b536-544f5f13a004"
+    }
+  }
+}

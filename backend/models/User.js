@@ -1,6 +1,6 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../database/connection');
-const bcrypt = require('bcrypt');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../database/connection.js';
+import bcrypt from 'bcrypt';
 
 // User Model for Authentication
 const User = sequelize.define('User', {
@@ -107,4 +107,4 @@ User.prototype.resetLoginAttempts = async function() {
   });
 };
 
-module.exports = User;
+export { User };

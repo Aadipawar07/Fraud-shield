@@ -5,10 +5,13 @@ A comprehensive fraud detection application that analyzes SMS messages for poten
 ## 🚀 Features
 
 - **Real-time SMS Analysis**: Instant fraud detection for SMS messages
-- **AI-Powered Detection**: Uses HuggingFace ML models for accurate spam detection
-- **Fallback System**: Rule-based detection when AI is unavailable
+- **AI-Powered Detection**: Uses OpenAI and HuggingFace ML models for accurate fraud detection
+- **Advanced Pattern Recognition**: Detects common fraud patterns in message content
+- **Multi-Level Analysis**: Combines AI, pattern matching, and heuristic approaches
+- **Fallback System**: Rule-based detection when AI services are unavailable
 - **Cross-Platform**: Works on iOS, Android, and Web
 - **Modern UI**: Built with React Native and Expo
+- **Detailed Explanations**: Provides human-readable reasons for fraud classification
 
 ## 📁 Project Structure
 
@@ -22,6 +25,11 @@ Fraud-Shield/
 │   ├── app/                # App screens and routing
 │   ├── components/         # Reusable components
 │   ├── services/           # API services
+│   ├── utils/              # Utility functions
+│   │   ├── smsAnalyzer.ts  # OpenAI-powered SMS analysis
+│   │   └── localDetection.ts # Fallback detection system
+│   ├── docs/               # Documentation
+│   │   └── SMS_FRAUD_DETECTION.md # SMS detection documentation
 │   └── assets/             # Images and icons
 └── start-app.ps1           # Quick start script
 ```

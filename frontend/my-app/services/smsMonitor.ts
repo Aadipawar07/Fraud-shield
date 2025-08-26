@@ -2,6 +2,7 @@ import { Platform, PermissionsAndroid } from "react-native";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { checkMessageSafety } from "./api";
+import { analyzeMessage, getReadableAnalysis } from "../utils/smsAnalyzer";
 import Toast from "react-native-toast-message";
 
 // Type definitions
@@ -224,11 +225,26 @@ class SMSMonitorService {
 
       // Perform fraud detection
       console.log("Checking message for fraud:", smsMessage.message);
-      const fraudResult = await checkMessageSafety(smsMessage.message);
-
-      smsMessage.isFraud = !fraudResult.safe;
-      smsMessage.fraudReason = fraudResult.reason;
-      smsMessage.confidence = fraudResult.confidence;
+      
+      try {
+        // First try our advanced AI-powered analyzer
+        const analyzerResult = await analyzeMessage(smsMessage.message, smsMessage.sender);
+        
+        smsMessage.isFraud = analyzerResult.isFraud;
+        smsMessage.fraudReason = analyzerResult.reason || 
+                                (analyzerResult.isFraud ? 'Suspicious patterns detected' : 'Message appears safe');
+        smsMessage.confidence = analyzerResult.score;
+        
+        console.log("AI analysis result:", analyzerResult);
+      } catch (error) {
+        console.error("AI analysis failed, falling back to API:", error);
+        
+        // Fall back to API-based detection if AI analysis fails
+        const fraudResult = await checkMessageSafety(smsMessage.message);
+        smsMessage.isFraud = !fraudResult.safe;
+        smsMessage.fraudReason = fraudResult.reason;
+        smsMessage.confidence = fraudResult.confidence;
+      }
 
       // Update statistics
       this.state.processedCount++;
@@ -436,10 +452,37 @@ class SMSMonitorService {
       isFraud: false,
     };
 
-    const fraudResult = await checkMessageSafety(message);
-    smsMessage.isFraud = !fraudResult.safe;
-    smsMessage.fraudReason = fraudResult.reason;
-    smsMessage.confidence = fraudResult.confidence;
+    try {
+      console.log("Scanning message using ChatGPT and rule-based verification...");
+      
+      // Try our ChatGPT-powered analyzer (will fall back to rule-based if API fails)
+      const analyzerResult = await analyzeMessage(message, sender);
+      
+      smsMessage.isFraud = analyzerResult.isFraud;
+      smsMessage.fraudReason = analyzerResult.reason || 
+                              (analyzerResult.isFraud ? 'Suspicious patterns detected' : 'Message appears safe');
+      smsMessage.confidence = analyzerResult.score;
+      
+      // Log which method was used for verification
+      if (analyzerResult.matchedPatterns?.includes('ChatGPT detection')) {
+        console.log("Message scanned successfully using ChatGPT API");
+      } else if (analyzerResult.matchedPatterns?.includes('Rule-based detection')) {
+        console.log("Message scanned using rule-based verification (ChatGPT API unavailable)");
+      } else {
+        console.log("Message scanned using pattern analysis");
+      }
+      
+      console.log("Analysis result for scan:", analyzerResult);
+    } catch (error) {
+      console.error("Both ChatGPT and rule-based analysis failed, falling back to backend API:", error);
+      
+      // Last resort: Fall back to backend API-based detection if all else fails
+      const fraudResult = await checkMessageSafety(message);
+      smsMessage.isFraud = !fraudResult.safe;
+      smsMessage.fraudReason = fraudResult.reason;
+      smsMessage.confidence = fraudResult.confidence;
+      console.log("Backend API analysis result:", fraudResult);
+    }
 
     await this.storeSMSMessage(smsMessage);
 

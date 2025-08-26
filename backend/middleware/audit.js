@@ -1,9 +1,9 @@
-const { AuditLog } = require('../models/AuditLog');
+import { AuditLog } from '../models/AuditLog.js';
 
 /**
  * Middleware to log all API requests
  */
-exports.requestLogger = (req, res, next) => {
+export const requestLogger = (req, res, next) => {
   // Capture original end method
   const originalEnd = res.end;
   
@@ -37,7 +37,7 @@ exports.requestLogger = (req, res, next) => {
  * Create an audit log entry
  * @param {Object} options - Audit log options
  */
-exports.createAuditLog = async (options) => {
+export const createAuditLog = async (options) => {
   try {
     const { 
       action, 
@@ -97,7 +97,7 @@ exports.auditAction = (action, entity, importance = 'medium') => {
       }
       
       // Create audit log entry
-      exports.createAuditLog({
+      createAuditLog({
         action,
         entity,
         entityId,
