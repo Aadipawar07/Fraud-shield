@@ -24,6 +24,9 @@ export interface FraudCheckResponse {
   reason: string;
   confidence?: number;
   method?: string;
+  safetyScore?: number;
+  analysis?: string;
+  phoneNumber?: string;
 }
 
 export async function checkMessageSafety(
@@ -50,14 +53,18 @@ export async function checkMessageSafety(
     console.log("API Response:", data);
 
     // Handle the structure from our backend API
+    const confidence = (data.confidence_score && typeof data.confidence_score === 'number') 
+        ? (data.confidence_score > 1 ? data.confidence_score / 100 : data.confidence_score) 
+        : 0.5;
+    
     const result = {
       safe: data.classification !== "FRAUD",
       reason: data.reason || "No reason provided",
-      // Ensure confidence_score is in the 0-1 range
-      confidence: (data.confidence_score && typeof data.confidence_score === 'number') 
-        ? (data.confidence_score > 1 ? data.confidence_score / 100 : data.confidence_score) 
-        : 0.5,
+      confidence: confidence,
       method: data.note || "API Detection",
+      safetyScore: data.classification !== "FRAUD" ? confidence * 100 : (1 - confidence) * 100,
+      analysis: data.reason || "Message analyzed using AI-powered fraud detection.",
+      phoneNumber: (data.phone_number || data.sender || "").toString()
     };
 
     console.log("Transformed result:", result);

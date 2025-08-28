@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useRouter, router } from "expo-router";
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { callProtectedApi } from "../../services/auth";
 import { Colors } from "../../constants/Colors";
@@ -132,7 +132,7 @@ const HomeScreen = () => {
         </View>
         
         <TouchableOpacity
-          onPress={() => router.push("/scan")}
+          onPress={() => router.navigate("/scan")}
           style={styles.scanButton}
         >
           <Text style={styles.scanButtonText}>🔍 Scan Now</Text>

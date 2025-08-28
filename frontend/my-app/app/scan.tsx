@@ -122,14 +122,14 @@ export default function ScanScreen() {
                   <View
                     style={[
                       styles.scoreValue,
-                      {
-                        width: `${
-                          result.safe
-                            ? result.safetyScore
-                            : 100 - result.safetyScore
-                        }%`,
-                        backgroundColor: result.safe ? "#15803d" : "#b91c1c",
-                      },
+                      result.safetyScore !== undefined
+                        ? {
+                            width: `${result.safe
+                              ? result.safetyScore
+                              : 100 - result.safetyScore}%`,
+                            backgroundColor: result.safe ? "#15803d" : "#b91c1c",
+                          }
+                        : { width: "0%", backgroundColor: result.safe ? "#15803d" : "#b91c1c" },
                     ]}
                   />
                 </View>
@@ -142,7 +142,9 @@ export default function ScanScreen() {
                   ]}
                 >
                   {formatConfidencePercentage(
-                    result.safe ? result.safetyScore : 100 - result.safetyScore
+                    result.safe
+                      ? (result.safetyScore ?? 0)
+                      : (100 - (result.safetyScore ?? 0))
                   )}
                 </Text>
               </View>

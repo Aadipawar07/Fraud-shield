@@ -9,7 +9,7 @@ import {
   FlatList,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getLearningContent } from "../../services/learningService";
 
@@ -75,7 +75,10 @@ export default function LearningScreen() {
   const renderArticleCard = ({ item }: { item: Article }) => (
     <TouchableOpacity
       style={styles.contentCard}
-      onPress={() => router.push(item.link)}
+      onPress={() => {
+        // Using the proper format for dynamic routes in Expo Router
+        router.navigate(`../learning/article/${item.id}`);
+      }}
     >
       <View style={styles.cardHeader}>
         {item.imageUrl ? (
@@ -107,7 +110,10 @@ export default function LearningScreen() {
   const renderCourseCard = ({ item }: { item: Course }) => (
     <TouchableOpacity
       style={styles.contentCard}
-      onPress={() => router.push(item.link)}
+      onPress={() => {
+        // Using the proper format for dynamic routes in Expo Router
+        router.navigate(`../learning/course/${item.id}`);
+      }}
     >
       <View style={styles.cardHeader}>
         {item.imageUrl ? (
