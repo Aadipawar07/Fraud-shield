@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Guidelines on Stock Broker Cyber Security Framework",
+    "date": "2025-07-01",
+    "category": "Stock Broker",
+    "description": "SEBI issues revised cyber security and resilience framework for stock brokers and depository participants.",
+    "link": "https://www.sebi.gov.in/circulars/2025/cyber-security-framework.html"
+  },
+  {
+    "title": "Mutual Fund Risk-o-meter Guidelines",
+    "date": "2025-06-15",
+    "category": "Mutual Funds",
+    "description": "Updated guidelines for risk evaluation and disclosure in mutual fund schemes with new risk-o-meter parameters.",
+    "link": "https://www.sebi.gov.in/circulars/2025/risk-o-meter-guidelines.html"
+  },
+  {
+    "title": "Advisory on Prevention of Unauthorized Trading",
+    "date": "2025-05-22",
+    "category": "Trading",
+    "description": "Measures to prevent unauthorized transactions and strengthen two-factor authentication for trading platforms.",
+    "link": "https://www.sebi.gov.in/circulars/2025/unauthorized-trading-prevention.html"
+  },
+  {
+    "title": "Framework for Regulatory Sandbox",
+    "date": "2025-04-10",
+    "category": "FinTech",
+    "description": "Updated framework for regulatory sandbox allowing testing of new fintech solutions in a controlled environment.",
+    "link": "https://www.sebi.gov.in/circulars/2025/regulatory-sandbox-framework.html"
+  },
+  {
+    "title": "Standardization of Ratings for ESG-Focused Mutual Fund Schemes",
+    "date": "2025-03-05",
+    "category": "Mutual Funds",
+    "description": "Guidelines for standardized rating methodology for Environmental, Social, and Governance (ESG) focused mutual fund schemes.",
+    "link": "https://www.sebi.gov.in/circulars/2025/esg-ratings-standardization.html"
+  }
+]

@@ -1,0 +1,164 @@
+{
+  "articles": [
+    {
+      "id": "a1",
+      "title": "Understanding Common Financial Scams",
+      "description": "Learn about the most common financial scams and how to identify them before they target you or your loved ones.",
+      "category": "Fraud Awareness",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "5 min",
+      "imageUrl": "",
+      "link": "/learning/article/a1",
+      "featured": true
+    },
+    {
+      "id": "a2",
+      "title": "Spotting Fraudulent Investment Opportunities",
+      "description": "Practical tips to identify and avoid fraudulent investment schemes that promise unrealistic returns.",
+      "category": "Investment Safety",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "8 min",
+      "imageUrl": "",
+      "link": "/learning/article/a2",
+      "featured": true
+    },
+    {
+      "id": "a3",
+      "title": "Guide to Secure Online Banking",
+      "description": "Essential practices for keeping your online banking secure and protected from fraudsters.",
+      "category": "Financial Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "6 min",
+      "imageUrl": "",
+      "link": "/learning/article/a3"
+    },
+    {
+      "id": "a4",
+      "title": "What to Do If You've Been Scammed",
+      "description": "Step-by-step guide on immediate actions to take if you believe you've fallen victim to a financial scam.",
+      "category": "Fraud Response",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "10 min",
+      "imageUrl": "",
+      "link": "/learning/article/a4"
+    },
+    {
+      "id": "a5",
+      "title": "Understanding SEBI Guidelines for Investors",
+      "description": "Overview of SEBI regulations designed to protect investors and ensure market integrity.",
+      "category": "SEBI Guidelines",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "12 min",
+      "imageUrl": "",
+      "link": "/learning/article/a5"
+    },
+    {
+      "id": "a6",
+      "title": "Protecting Seniors from Financial Fraud",
+      "description": "Special considerations and tips for protecting elderly family members from targeted financial scams.",
+      "category": "Fraud Awareness",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "7 min",
+      "imageUrl": "",
+      "link": "/learning/article/a6"
+    },
+    {
+      "id": "a7",
+      "title": "Digital Wallet Security Best Practices",
+      "description": "Learn how to secure your digital wallets and payment apps against unauthorized access and fraud.",
+      "category": "Financial Safety",
+      "type": "free",
+      "provider": "NPCI",
+      "readTime": "5 min",
+      "imageUrl": "",
+      "link": "/learning/article/a7"
+    },
+    {
+      "id": "a8",
+      "title": "Understanding KYC Requirements",
+      "description": "Explanation of KYC (Know Your Customer) procedures and why they are important for preventing financial fraud.",
+      "category": "Financial Education",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "8 min",
+      "imageUrl": "",
+      "link": "/learning/article/a8"
+    }
+  ],
+  "courses": [
+    {
+      "id": "c1",
+      "title": "Fundamentals of Financial Fraud Prevention",
+      "description": "Comprehensive course covering the basics of financial fraud prevention for everyday investors.",
+      "category": "Fraud Awareness",
+      "type": "free",
+      "provider": "SEBI",
+      "duration": "2 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c1",
+      "featured": true
+    },
+    {
+      "id": "c2",
+      "title": "Advanced Scam Detection Techniques",
+      "description": "Learn advanced methods to identify sophisticated scams targeting investors and financial consumers.",
+      "category": "Fraud Awareness",
+      "type": "paid",
+      "provider": "Finance Academy",
+      "duration": "4 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c2"
+    },
+    {
+      "id": "c3",
+      "title": "SEBI Regulatory Framework",
+      "description": "Detailed overview of the regulatory framework established by SEBI to protect investors.",
+      "category": "SEBI Guidelines",
+      "type": "free",
+      "provider": "SEBI",
+      "duration": "3 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c3",
+      "featured": true
+    },
+    {
+      "id": "c4",
+      "title": "Cybersecurity for Financial Transactions",
+      "description": "Essential cybersecurity practices to protect your financial transactions and personal data online.",
+      "category": "Financial Safety",
+      "type": "free",
+      "provider": "RBI",
+      "duration": "2.5 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c4"
+    },
+    {
+      "id": "c5",
+      "title": "Understanding Market Manipulation",
+      "description": "Learn to identify signs of market manipulation and how regulators combat these practices.",
+      "category": "Investment Safety",
+      "type": "paid",
+      "provider": "Market Education Institute",
+      "duration": "5 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c5"
+    },
+    {
+      "id": "c6",
+      "title": "Safe Digital Banking Practices",
+      "description": "Comprehensive guide to secure digital banking and preventing unauthorized access to your accounts.",
+      "category": "Financial Safety",
+      "type": "free",
+      "provider": "RBI",
+      "duration": "1.5 hours",
+      "imageUrl": "",
+      "link": "/learning/course/c6"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Fake Investments Pvt Ltd",
+    "entity_type": "Company",
+    "date_of_debarment": "2023-06-20",
+    "duration": "Permanent",
+    "reason": "Collecting funds without SEBI approval",
+    "status": "Debarred"
+  },
+  {
+    "name": "John Smith",
+    "entity_type": "Individual",
+    "date_of_debarment": "2024-03-15",
+    "duration": "5 Years",
+    "reason": "Market manipulation",
+    "status": "Debarred"
+  },
+  {
+    "name": "QuickRich Securities",
+    "entity_type": "Company",
+    "date_of_debarment": "2025-01-10",
+    "duration": "3 Years",
+    "reason": "Misleading investors with false information",
+    "status": "Debarred"
+  },
+  {
+    "name": "Jane Doe",
+    "entity_type": "Individual",
+    "date_of_debarment": "2022-09-05",
+    "duration": "2 Years",
+    "reason": "Insider trading",
+    "status": "Debarred"
+  },
+  {
+    "name": "GoldMine Investments Ltd",
+    "entity_type": "Company",
+    "date_of_debarment": "2024-11-30",
+    "duration": "Permanent",
+    "reason": "Ponzi scheme operation",
+    "status": "Debarred"
+  }
+]

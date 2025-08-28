@@ -1,0 +1,47 @@
+[
+  {
+    "name": "ABC Securities Pvt Ltd",
+    "registration_number": "INZ000123456",
+    "category": "Stock Broker",
+    "status": "Active",
+    "valid_till": "2027-12-31",
+    "contact": "022-12345678",
+    "address": "Mumbai, Maharashtra"
+  },
+  {
+    "name": "XYZ Investment Advisors",
+    "registration_number": "INA000987654",
+    "category": "Investment Advisor",
+    "status": "Active",
+    "valid_till": "2026-09-30",
+    "contact": "080-98765432",
+    "address": "Bangalore, Karnataka"
+  },
+  {
+    "name": "PQR Mutual Fund",
+    "registration_number": "INM000654321",
+    "category": "Mutual Fund",
+    "status": "Active",
+    "valid_till": "2026-03-31",
+    "contact": "011-45678901",
+    "address": "New Delhi, Delhi"
+  },
+  {
+    "name": "MNO Portfolio Managers",
+    "registration_number": "INP000789012",
+    "category": "Portfolio Manager",
+    "status": "Inactive",
+    "valid_till": "2023-12-31",
+    "contact": "033-56789012",
+    "address": "Kolkata, West Bengal"
+  },
+  {
+    "name": "RST Capital Markets",
+    "registration_number": "INB000345678",
+    "category": "Investment Banker",
+    "status": "Active",
+    "valid_till": "2027-06-30",
+    "contact": "044-34567890",
+    "address": "Chennai, Tamil Nadu"
+  }
+]
