@@ -53,7 +53,7 @@ const HomeScreen = () => {
           <Text style={styles.userName}>{user?.displayName || 'User'}</Text>
           <Text style={styles.subtitle}>Welcome to Fraud Shield</Text>
         </View>
-        <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
+        <TouchableOpacity style={styles.profileButton} onPress={() => router.navigate("/profile")}>
           {user?.photoURL ? (
             <Image source={{ uri: user.photoURL }} style={styles.profileImage} />
           ) : (
@@ -142,7 +142,7 @@ const HomeScreen = () => {
       {/* Features Grid */}
       <View style={styles.featuresGrid}>
         <TouchableOpacity
-          onPress={() => router.push("/monitor")}
+          onPress={() => router.navigate("/(tabs)/monitor")}
           style={styles.featureCard}
         >
           <MaterialIcons name="sms" size={36} color="#2563eb" />
@@ -150,7 +150,7 @@ const HomeScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push("/report")}
+          onPress={() => router.navigate("/(tabs)/report")}
           style={styles.featureCard}
         >
           <FontAwesome5 name="flag" size={30} color="#dc2626" />
@@ -158,7 +158,7 @@ const HomeScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push("/verify")}
+          onPress={() => router.navigate("/(tabs)/verify")}
           style={styles.featureCard}
         >
           <MaterialIcons name="verified-user" size={36} color="#16a34a" />

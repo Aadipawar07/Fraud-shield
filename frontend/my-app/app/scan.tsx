@@ -50,7 +50,7 @@ export default function ScanScreen() {
       contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom) }}
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.navigate("/(tabs)")} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>🔍 SMS Fraud Scanner</Text>
@@ -212,15 +212,11 @@ export default function ScanScreen() {
                 style={styles.reportButton}
                 onPress={() => {
                   if (result.phoneNumber) {
-                    router.push({
-                      pathname: "/report",
-                      params: {
-                        phoneNumber: result.phoneNumber,
-                        message: message,
-                      },
-                    });
+                    router.navigate(
+                      `/(tabs)/report?phoneNumber=${encodeURIComponent(result.phoneNumber)}&message=${encodeURIComponent(message)}`
+                    );
                   } else {
-                    router.push("/report");
+                    router.navigate("/(tabs)/report");
                   }
                 }}
               >
