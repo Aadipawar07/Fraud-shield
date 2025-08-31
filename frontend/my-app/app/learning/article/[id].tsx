@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { getArticleById } from '../../../services/learningService';
+import { educationalResources } from '../../../app/services/educationalResources';
+import Markdown from 'react-native-markdown-display';
 
 // Helper function to get the right image based on article ID
 const getArticleImage = (id: string) => {
@@ -31,6 +33,7 @@ interface Article {
   title?: string;
   content?: string;
   image?: string;
+  imageUrl?: string;
   description?: string;
   category?: string;
   type?: 'free' | 'paid';
@@ -38,20 +41,44 @@ interface Article {
   readTime?: string;
 }
 
-// Article detail screen - to be implemented in the future
+// Define Educational Resource type
+interface EducationalResource {
+  id: string;
+  title: string;
+  category: string;
+  readTime: string;
+  content: string;
+  imageUrl: string;
+  provider?: string;
+  description?: string;
+}
+
+// Article detail screen with support for educational resources
 export default function ArticleScreen() {
   const { id } = useLocalSearchParams();
   const [article, setArticle] = useState<Article | undefined>(undefined);
+  const [educationalResource, setEducationalResource] = useState<EducationalResource | undefined>(undefined);
   const insets = useSafeAreaInsets();
   
   useEffect(() => {
     if (id) {
+      // First check if it's a regular article from learning service
       const articleData = getArticleById(id.toString());
-      setArticle(articleData);
+      
+      // If it's not a regular article, check if it's an educational resource
+      if (!articleData) {
+        const educResource = educationalResources.find(resource => resource.id === id);
+        if (educResource) {
+          setEducationalResource(educResource);
+        }
+      } else {
+        setArticle(articleData);
+      }
     }
   }, [id]);
 
-  if (!article) {
+  // Show loading if neither article nor educational resource is loaded
+  if (!article && !educationalResource) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
@@ -68,6 +95,9 @@ export default function ArticleScreen() {
     );
   }
 
+  // Use either the article or educational resource data
+  const displayData = educationalResource || article;
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -79,39 +109,56 @@ export default function ArticleScreen() {
       </View>
       
       <ScrollView style={styles.content}>
-        {article.id && (
+        {/* Display the article image */}
+        {displayData?.imageUrl ? (
           <Image 
-            source={getArticleImage(article.id)}
+            source={{ uri: displayData.imageUrl }} 
             style={styles.articleImage}
             resizeMode="cover"
           />
-        )}
-        <Text style={styles.title}>{article.title}</Text>
+        ) : displayData?.id && !educationalResource ? (
+          <Image 
+            source={getArticleImage(displayData.id)}
+            style={styles.articleImage}
+            resizeMode="cover"
+          />
+        ) : null}
+        
+        <Text style={styles.title}>{displayData?.title}</Text>
         
         <View style={styles.metaContainer}>
-          {article.provider && (
+          {displayData?.provider && (
             <View style={styles.metaItem}>
               <Ionicons name="business-outline" size={14} color="#64748b" />
-              <Text style={styles.metaText}>{article.provider}</Text>
+              <Text style={styles.metaText}>{displayData.provider}</Text>
             </View>
           )}
-          {article.category && (
+          {displayData?.category && (
             <View style={styles.metaItem}>
               <Ionicons name="folder-outline" size={14} color="#64748b" />
-              <Text style={styles.metaText}>{article.category}</Text>
+              <Text style={styles.metaText}>{displayData.category}</Text>
             </View>
           )}
-          {article.readTime && (
+          {displayData?.readTime && (
             <View style={styles.metaItem}>
               <Ionicons name="time-outline" size={14} color="#64748b" />
-              <Text style={styles.metaText}>{article.readTime} read</Text>
+              <Text style={styles.metaText}>{displayData.readTime} read</Text>
             </View>
           )}
         </View>
         
-        <Text style={styles.message}>
-          {article.description || "Full article content will be available soon."}
-        </Text>
+        {/* Display content depending on type */}
+        {educationalResource ? (
+          <View style={styles.markdownContainer}>
+            <Markdown style={markdownStyles}>
+              {educationalResource.content}
+            </Markdown>
+          </View>
+        ) : (
+          <Text style={styles.message}>
+            {displayData?.description || "Full article content will be available soon."}
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -186,4 +233,59 @@ const styles = StyleSheet.create({
     color: '#64748b',
     marginLeft: 4,
   },
+  markdownContainer: {
+    marginTop: 10,
+  }
 });
+
+const markdownStyles = {
+  body: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#1f2937',
+  },
+  heading1: {
+    fontSize: 24,
+    marginTop: 24,
+    marginBottom: 12,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  heading2: {
+    fontSize: 20,
+    marginTop: 20,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  heading3: {
+    fontSize: 18,
+    marginTop: 18,
+    marginBottom: 8,
+    fontWeight: 'bold',
+    color: '#374151',
+  },
+  paragraph: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 12,
+    color: '#4b5563',
+  },
+  listItem: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#4b5563',
+  },
+  listUnorderedItemIcon: {
+    fontSize: 18,
+    marginRight: 10,
+    color: '#3b82f6',
+  },
+  strong: {
+    fontWeight: 'bold' as 'bold',
+  },
+  link: {
+    color: '#2563eb',
+    textDecorationLine: 'underline' as 'underline',
+  },
+};

@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
   View,
-  Text,
   ScrollView,
   TouchableOpacity,
   Platform,
   Alert,
   RefreshControl,
-  TextInput,
   StyleSheet,
   Share,
+  TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { formatConfidencePercentage } from "../../utils/formatters";
 import smsMonitorService, {
   SMSMessage,
@@ -22,9 +22,26 @@ import {
   testMessages,
   runFullSMSTest,
 } from "../../utils/smsTestUtils";
+import { ThemedText } from "../../components/ThemedText";
+import { Card, TouchableCard } from "../../components/Card";
+import { ThemedView } from "../../components/ThemedView";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
+import { Spacing } from "../../constants/Spacing";
+import { BorderRadius, Shadow } from "../../constants/Shape";
+import { useTheme } from "../../context/ThemeContext";
+import { useThemeColor } from "../../hooks/useThemeColor";
 
 export default function MonitorScreen() {
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useTheme();
+  const primaryColor = useThemeColor({}, "tint");
+  const successColor = useThemeColor({}, "success");
+  const warningColor = useThemeColor({}, "warning");
+  const dangerColor = useThemeColor({}, "danger");
+  const neutralColor = useThemeColor({}, "textSecondary");
+  const backgroundColor = useThemeColor({}, "background");
+
   const [monitorState, setMonitorState] = useState<SMSMonitorState>({
     isMonitoring: false,
     permissionsGranted: false,
@@ -237,77 +254,74 @@ export default function MonitorScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom) }}
+      style={[styles.container, { backgroundColor }]}
+      contentContainerStyle={{ paddingBottom: Math.max(Spacing.xl, insets.bottom) }}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }
     >
       <View style={styles.contentWrapper}>
         {/* Header */}
-        <Text style={styles.headerText}>📊 SMS Monitor</Text>
+        <ThemedView style={styles.header}>
+          <ThemedText variant="h2" style={styles.headerText}>SMS Monitor</ThemedText>
+          <MaterialIcons name="analytics" size={24} color={primaryColor} style={styles.headerIcon} />
+        </ThemedView>
 
         {/* Monitoring Status Card */}
-        <View style={styles.card}>
+        <Card style={styles.card}>
           <View style={styles.cardHeaderRow}>
-            <Text style={styles.cardTitle}>Real-time Monitoring</Text>
+            <ThemedText variant="h3" style={styles.cardTitle}>Real-time Monitoring</ThemedText>
             <View
               style={[
                 styles.statusDot,
                 {
                   backgroundColor: monitorState.isMonitoring
-                    ? "#22c55e"
-                    : "#9ca3af",
+                    ? successColor
+                    : neutralColor,
                 },
               ]}
             />
           </View>
 
-          <TouchableOpacity
+          <Button
+            title={isLoading
+              ? "Processing..."
+              : monitorState.isMonitoring
+                ? "Stop Monitoring"
+                : "Start Monitoring"
+            }
+            variant={monitorState.isMonitoring ? "danger" : "primary"}
+            size="large"
             onPress={handleToggleMonitoring}
             disabled={isLoading}
-            style={[
-              styles.primaryAction,
-              monitorState.isMonitoring
-                ? styles.stopButton
-                : styles.startButton,
-            ]}
-          >
-            <Text
-              style={[
-                styles.primaryActionText,
-                monitorState.isMonitoring ? styles.stopText : styles.startText,
-              ]}
-            >
-              {isLoading
-                ? "Processing..."
-                : monitorState.isMonitoring
-                  ? "⏹️ Stop Monitoring"
-                  : "▶️ Start Monitoring"}
-            </Text>
-          </TouchableOpacity>
+            leftIcon={monitorState.isMonitoring 
+              ? <Ionicons name="stop" size={20} color="#fff" /> 
+              : <Ionicons name="play" size={20} color="#fff" />
+            }
+            style={styles.monitoringButton}
+          />
 
           {Platform.OS !== "android" && (
-            <View style={styles.infoBannerWarning}>
-              <Text style={styles.infoBannerWarningText}>
+            <ThemedView style={styles.infoBannerWarning}>
+              <ThemedText style={styles.infoBannerWarningText}>
                 ⚠️ SMS monitoring is only available on Android
-              </Text>
-            </View>
+              </ThemedText>
+            </ThemedView>
           )}
 
           {Platform.OS === "android" && !monitorState.permissionsGranted && (
-            <View style={styles.infoBannerError}>
-              <Text style={styles.infoBannerErrorText}>
+            <ThemedView style={styles.infoBannerError}>
+              <ThemedText style={styles.infoBannerErrorText}>
                 ❌ SMS permissions required for monitoring
-              </Text>
-            </View>
+              </ThemedText>
+            </ThemedView>
           )}
 
           {/* Auto-start toggle */}
           <View style={styles.autoRow}>
-            <Text style={styles.autoText}>
+            <ThemedText variant="bodyMedium" style={styles.autoText}>
               Auto-start monitoring on app launch
-            </Text>
+            </ThemedText>
             <TouchableOpacity
               onPress={async () => {
                 const next = !autoStart;
@@ -327,41 +341,41 @@ export default function MonitorScreen() {
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </Card>
 
         {/* Stats */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Monitoring Statistics</Text>
+        <Card style={styles.card}>
+          <ThemedText variant="h3" style={styles.cardTitle}>Monitoring Statistics</ThemedText>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: "#16a34a" }]}>
+              <ThemedText variant="h3" style={[styles.statNumber, { color: successColor }]}>
                 {Math.max(
                   0,
                   monitorState.processedCount - monitorState.fraudCount,
                 )}
-              </Text>
-              <Text style={styles.statLabel}>Safe Messages</Text>
+              </ThemedText>
+              <ThemedText variant="caption" style={styles.statLabel}>Safe Messages</ThemedText>
             </View>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: "#dc2626" }]}>
+              <ThemedText variant="h3" style={[styles.statNumber, { color: dangerColor }]}>
                 {monitorState.fraudCount}
-              </Text>
-              <Text style={styles.statLabel}>Fraud Detected</Text>
+              </ThemedText>
+              <ThemedText variant="caption" style={styles.statLabel}>Fraud Detected</ThemedText>
             </View>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: "#2563eb" }]}>
+              <ThemedText variant="h3" style={[styles.statNumber, { color: primaryColor }]}>
                 {monitorState.processedCount}
-              </Text>
-              <Text style={styles.statLabel}>Total Scanned</Text>
+              </ThemedText>
+              <ThemedText variant="caption" style={styles.statLabel}>Total Scanned</ThemedText>
             </View>
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: "#f59e0b" }]}>
+              <ThemedText variant="h3" style={[styles.statNumber, { color: warningColor }]}>
                 {fraudRate}%
-              </Text>
-              <Text style={styles.statLabel}>Fraud Rate</Text>
+              </ThemedText>
+              <ThemedText variant="caption" style={styles.statLabel}>Fraud Rate</ThemedText>
             </View>
           </View>
-        </View>
+        </Card>
 
         {/* Filters & Search */}
         <View style={styles.filterRow}>
@@ -372,14 +386,15 @@ export default function MonitorScreen() {
               selectedFilter === "all" && styles.filterChipActive,
             ]}
           >
-            <Text
+            <ThemedText
+              variant="label"
               style={[
                 styles.filterChipText,
                 selectedFilter === "all" && styles.filterChipTextActive,
               ]}
             >
               All
-            </Text>
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSelectedFilter("fraud")}
@@ -388,14 +403,15 @@ export default function MonitorScreen() {
               selectedFilter === "fraud" && styles.filterChipActive,
             ]}
           >
-            <Text
+            <ThemedText
+              variant="label"
               style={[
                 styles.filterChipText,
                 selectedFilter === "fraud" && styles.filterChipTextActive,
               ]}
             >
               Fraud
-            </Text>
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSelectedFilter("safe")}
@@ -404,58 +420,55 @@ export default function MonitorScreen() {
               selectedFilter === "safe" && styles.filterChipActive,
             ]}
           >
-            <Text
+            <ThemedText
+              variant="label"
               style={[
                 styles.filterChipText,
                 selectedFilter === "safe" && styles.filterChipTextActive,
               ]}
             >
               Safe
-            </Text>
+            </ThemedText>
           </TouchableOpacity>
         </View>
 
-        <TextInput
+        <Input
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search by sender or message..."
-          style={styles.searchInput}
+          containerStyle={styles.searchInput}
         />
 
         {/* Actions */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity
-            style={[styles.secondaryAction, { backgroundColor: "#dbeafe" }]}
+          <Button
+            title="🔄 Refresh"
+            variant="secondary"
+            size="medium"
             onPress={loadInitialData}
-          >
-            <Text style={[styles.secondaryActionText, { color: "#2563eb" }]}>
-              🔄 Refresh
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.secondaryAction, { backgroundColor: "#f3f4f6" }]}
+            style={styles.secondaryAction}
+          />
+          <Button
+            title="🗑️ Clear Reports"
+            variant="secondary"
+            size="medium"
             onPress={handleClearReports}
-          >
-            <Text style={[styles.secondaryActionText, { color: "#374151" }]}>
-              🗑️ Clear Reports
-            </Text>
-          </TouchableOpacity>
+            style={styles.secondaryAction}
+          />
         </View>
 
-        <TouchableOpacity
-          style={[styles.secondaryAction, { backgroundColor: "#f3e8ff" }]}
+        <Button
+          title="🧪 Test SMS Detection"
+          variant="outline"
+          size="medium"
           onPress={handleTestSMS}
-        >
-          <Text style={[styles.secondaryActionText, { color: "#7c3aed" }]}>
-            🧪 Test SMS Detection
-          </Text>
-        </TouchableOpacity>
+          style={[styles.secondaryAction, { marginBottom: 8 }]}
+        />
 
-        <TouchableOpacity
-          style={[
-            styles.secondaryAction,
-            { backgroundColor: "#fff7ed", marginTop: 8 },
-          ]}
+        <Button
+          title="🧪 Run Full Test Suite"
+          variant="outline"
+          size="medium"
           onPress={async () => {
             try {
               await runFullSMSTest();
@@ -464,57 +477,57 @@ export default function MonitorScreen() {
               Alert.alert("Test Failed", "Full SMS test encountered errors.");
             }
           }}
-        >
-          <Text style={[styles.secondaryActionText, { color: "#c2410c" }]}>
-            🧪 Run Full Test Suite
-          </Text>
-        </TouchableOpacity>
+          style={styles.secondaryAction}
+        />
 
         {/* Recent Scans */}
         <View style={styles.listHeaderRow}>
-          <Text style={styles.cardTitle}>Recent Scans</Text>
-          <Text style={styles.subtleText}>
+          <ThemedText variant="h3" style={styles.cardTitle}>Recent Scans</ThemedText>
+          <ThemedText variant="caption" style={styles.subtleText}>
             {filteredMessages.length} messages
-          </Text>
+          </ThemedText>
         </View>
 
         {filteredMessages.length > 0 ? (
           filteredMessages.map((sms) => {
             const isExpanded = expandedIds.has(sms.id);
             return (
-              <View key={sms.id} style={styles.messageCard}>
+              <Card key={sms.id} style={styles.messageCard}>
                 <View style={styles.messageHeaderRow}>
-                  <Text
+                  <ThemedText
+                    variant="label"
+                    weight="semibold"
                     style={[
                       styles.badgeText,
-                      { color: sms.isFraud ? "#dc2626" : "#16a34a" },
+                      { color: sms.isFraud ? dangerColor : successColor },
                     ]}
                   >
                     {sms.isFraud ? "🚨 FRAUD" : "✅ SAFE"}
-                  </Text>
-                  <Text style={styles.timestampText}>
+                  </ThemedText>
+                  <ThemedText variant="caption" style={styles.timestampText}>
                     {formatTimeAgo(sms.timestamp)}
-                  </Text>
+                  </ThemedText>
                 </View>
 
-                <Text style={styles.senderText}>From: {sms.sender}</Text>
+                <ThemedText variant="bodyMedium" style={styles.senderText}>From: {sms.sender}</ThemedText>
 
-                <Text
+                <ThemedText
+                  variant="bodyMedium"
                   style={styles.messageText}
                   numberOfLines={isExpanded ? 10 : 2}
                 >
                   {sms.message}
-                </Text>
+                </ThemedText>
 
                 {sms.isFraud && sms.fraudReason && (
                   <View style={styles.reasonBox}>
-                    <Text style={styles.reasonText}>
+                    <ThemedText variant="bodySmall" style={styles.reasonText}>
                       Reason: {sms.fraudReason}
-                    </Text>
+                    </ThemedText>
                     {sms.confidence && (
-                      <Text style={styles.confidenceText}>
+                      <ThemedText variant="caption" style={styles.confidenceText}>
                         Confidence: {formatConfidencePercentage(sms.confidence)}
-                      </Text>
+                      </ThemedText>
                     )}
                   </View>
                 )}
@@ -524,31 +537,31 @@ export default function MonitorScreen() {
                     onPress={() => toggleExpanded(sms.id)}
                     style={styles.cardActionBtn}
                   >
-                    <Text style={styles.cardActionText}>
+                    <ThemedText variant="button" style={styles.cardActionText}>
                       {isExpanded ? "Collapse" : "Expand"}
-                    </Text>
+                    </ThemedText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleShare(sms)}
                     style={styles.cardActionBtn}
                   >
-                    <Text style={styles.cardActionText}>Share</Text>
+                    <ThemedText variant="button" style={styles.cardActionText}>Share</ThemedText>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </Card>
             );
           })
         ) : (
-          <View style={styles.emptyStateCard}>
-            <Text style={styles.emptyStateTitle}>
+          <Card style={styles.emptyStateCard}>
+            <ThemedText variant="bodyLarge" weight="semibold" style={styles.emptyStateTitle}>
               📱 No SMS messages scanned yet
-            </Text>
-            <Text style={styles.emptyStateSubtitle}>
+            </ThemedText>
+            <ThemedText variant="bodyMedium" secondary style={styles.emptyStateSubtitle}>
               {Platform.OS === "android"
                 ? "Start monitoring to see real-time fraud detection"
                 : "SMS monitoring is only available on Android"}
-            </Text>
-          </View>
+            </ThemedText>
+          </Card>
         )}
       </View>
     </ScrollView>
@@ -563,12 +576,20 @@ const styles = StyleSheet.create({
   contentWrapper: {
     padding: 24,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#111827",
-    marginBottom: 16,
-    textAlign: "center",
+    marginBottom: 0,
+  },
+  headerIcon: {
+    marginLeft: 8,
   },
   card: {
     backgroundColor: "#ffffff",
@@ -603,6 +624,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 8,
     marginBottom: 8,
+  },
+  monitoringButton: {
+    marginVertical: 8,
   },
   startButton: { backgroundColor: "#dcfce7" },
   stopButton: { backgroundColor: "#fee2e2" },

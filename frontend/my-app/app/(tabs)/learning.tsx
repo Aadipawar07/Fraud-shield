@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -13,6 +12,15 @@ import { router, useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getLearningContent } from "../../services/learningService";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { educationalResources } from '../services/educationalResources';
+import { ThemedText } from "../../components/ThemedText";
+import { Card, TouchableCard } from "../../components/Card";
+import { ThemedView } from "../../components/ThemedView";
+import Button from "../../components/Button";
+import { Spacing } from "../../constants/Spacing";
+import { BorderRadius, Shadow } from "../../constants/Shape";
+import { useTheme } from "../../context/ThemeContext";
+import { useThemeColor } from "../../hooks/useThemeColor";
 
 // Helper function to get the right image based on article ID
 const getArticleImage = (id: string) => {
@@ -81,8 +89,8 @@ interface UserProgress {
 export default function LearningScreen() {
   const insets = useSafeAreaInsets();
   const { activeTab: initialTab } = useLocalSearchParams<{ activeTab?: string }>();
-  const [activeTab, setActiveTab] = useState<"articles" | "courses" | "scamquest">(
-    initialTab === "scamquest" ? "scamquest" : "articles"
+  const [activeTab, setActiveTab] = useState<"articles" | "courses" | "scamquest" | "resources">(
+    initialTab === "scamquest" ? "scamquest" : (initialTab === "resources" ? "resources" : "articles")
   );
   const [articles, setArticles] = useState<Article[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -93,6 +101,15 @@ export default function LearningScreen() {
     completedLevels: [],
     currentLevel: 'l1',
   });
+  
+  // Theme colors
+  const { colorScheme } = useTheme();
+  const primaryColor = useThemeColor({}, "tint");
+  const successColor = useThemeColor({}, "success");
+  const warningColor = useThemeColor({}, "warning");
+  const dangerColor = useThemeColor({}, "danger");
+  const neutralColor = useThemeColor({}, "textSecondary");
+  const backgroundColor = useThemeColor({}, "background");
   
   // Fetch learning content
   // Extract loadUserProgress function to make it reusable
@@ -371,17 +388,60 @@ export default function LearningScreen() {
           resizeMode="cover"
         />
         <View style={styles.cardBadge}>
-          <Text style={styles.cardBadgeText}>{item.type}</Text>
+          <ThemedText style={styles.cardBadgeText}>{item.type}</ThemedText>
         </View>
       </View>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDescription} numberOfLines={2}>
+        <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+        <ThemedText style={styles.cardDescription} numberOfLines={2}>
           {item.description}
-        </Text>
+        </ThemedText>
         <View style={styles.cardMeta}>
-          <Text style={styles.cardProvider}>{item.provider}</Text>
-          <Text style={styles.cardReadTime}>• {item.readTime} read</Text>
+          <ThemedText style={styles.cardProvider}>{item.provider}</ThemedText>
+          <ThemedText style={styles.cardReadTime}>• {item.readTime} read</ThemedText>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  // Define the Educational Resource type
+  interface EducationalResource {
+    id: string;
+    title: string;
+    category: string;
+    readTime: string;
+    content: string;
+    imageUrl: string;
+  }
+
+  // Render an educational resource card
+  const renderResourceCard = ({ item }: { item: EducationalResource }) => (
+    <TouchableOpacity
+      style={styles.contentCard}
+      onPress={() => {
+        // Navigate to the article view with the resource ID
+        router.navigate(`/learning/article/${item.id}`);
+      }}
+    >
+      <View style={styles.cardHeader}>
+        <Image 
+          source={{ uri: item.imageUrl }}
+          style={styles.cardImage}
+          resizeMode="cover"
+          defaultSource={require('../../assets/images/articles/article-1.png')}
+        />
+        <View style={styles.cardBadge}>
+          <ThemedText style={styles.cardBadgeText}>Free</ThemedText>
+        </View>
+      </View>
+      <View style={styles.cardBody}>
+        <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+        <ThemedText style={styles.cardDescription} numberOfLines={2}>
+          Educational resource with detailed information
+        </ThemedText>
+        <View style={styles.cardMeta}>
+          <ThemedText style={styles.cardProvider}>{item.category}</ThemedText>
+          <ThemedText style={styles.cardReadTime}>• {item.readTime} read</ThemedText>
         </View>
       </View>
     </TouchableOpacity>
@@ -407,24 +467,24 @@ export default function LearningScreen() {
             item.type === 'paid' ? styles.paidBadge : styles.freeBadge
           ]}
         >
-          <Text 
+          <ThemedText 
             style={[
               styles.cardBadgeText,
               item.type === 'paid' ? styles.paidBadgeText : styles.freeBadgeText
             ]}
           >
             {item.type}
-          </Text>
+          </ThemedText>
         </View>
       </View>
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDescription} numberOfLines={2}>
+        <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+        <ThemedText style={styles.cardDescription} numberOfLines={2}>
           {item.description}
-        </Text>
+        </ThemedText>
         <View style={styles.cardMeta}>
-          <Text style={styles.cardProvider}>{item.provider}</Text>
-          <Text style={styles.cardReadTime}>• {item.duration}</Text>
+          <ThemedText style={styles.cardProvider}>{item.provider}</ThemedText>
+          <ThemedText style={styles.cardReadTime}>• {item.duration}</ThemedText>
         </View>
       </View>
     </TouchableOpacity>
@@ -456,28 +516,28 @@ export default function LearningScreen() {
         style={[styles.scamLevelCard, { borderColor: item.color }]}
       >
         <View style={[styles.scamLevelHeader, { backgroundColor: item.color }]}>
-          <Text style={styles.scamLevelTitle}>{item.title}</Text>
+          <ThemedText style={styles.scamLevelTitle}>{item.title}</ThemedText>
           <MaterialIcons name={statusIcon} size={24} color={statusColor} />
         </View>
         <View style={styles.scamLevelBody}>
-          <Text style={styles.scamLevelDescription}>{item.description}</Text>
+          <ThemedText style={styles.scamLevelDescription}>{item.description}</ThemedText>
           <View style={styles.scamLevelMeta}>
             <View style={styles.pointsBadge}>
               <MaterialIcons name="stars" size={16} color="#f59e0b" />
-              <Text style={styles.pointsText}>{item.points} pts</Text>
+              <ThemedText style={styles.pointsText}>{item.points} pts</ThemedText>
             </View>
             {item.badge && (
               <View style={styles.badgePill}>
-                <Text style={styles.badgeText}>{item.badge}</Text>
+                <ThemedText style={styles.badgeText}>{item.badge}</ThemedText>
               </View>
             )}
           </View>
         </View>
         <View style={styles.scamLevelFooter}>
-          <Text style={styles.scamLevelStatus}>
+          <ThemedText style={styles.scamLevelStatus}>
             {item.status === 'completed' ? 'Completed' : 
              item.status === 'in_progress' ? 'In Progress' : 'Locked'}
-          </Text>
+          </ThemedText>
         </View>
       </View>
     );
@@ -515,10 +575,10 @@ export default function LearningScreen() {
     <View style={styles.progressDashboard}>
       <View style={styles.progressHeader}>
         <View style={styles.progressInfo}>
-          <Text style={styles.progressTitle}>Your Progress</Text>
+          <ThemedText style={styles.progressTitle}>Your Progress</ThemedText>
           <View style={styles.pointsContainer}>
             <MaterialIcons name="stars" size={18} color="#f59e0b" />
-            <Text style={styles.totalPoints}>{userProgress.totalPoints} Points</Text>
+            <ThemedText style={styles.totalPoints}>{userProgress.totalPoints} Points</ThemedText>
           </View>
         </View>
         
@@ -528,7 +588,7 @@ export default function LearningScreen() {
           onPress={resetProgress}
         >
           <MaterialIcons name="refresh" size={16} color="#fff" />
-          <Text style={styles.resetButtonText}>Reset</Text>
+          <ThemedText style={styles.resetButtonText}>Reset</ThemedText>
         </TouchableOpacity>
       </View>
       <View style={styles.overallProgressContainer}>
@@ -542,21 +602,21 @@ export default function LearningScreen() {
           />
         </View>
         <View style={styles.progressLabels}>
-          <Text style={styles.progressLabel}>Beginner</Text>
-          <Text style={styles.progressLabel}>Intermediate</Text>
-          <Text style={styles.progressLabel}>Expert</Text>
+          <ThemedText style={styles.progressLabel}>Beginner</ThemedText>
+          <ThemedText style={styles.progressLabel}>Intermediate</ThemedText>
+          <ThemedText style={styles.progressLabel}>Expert</ThemedText>
         </View>
       </View>
       
       {/* Badge Collection Section */}
       {userProgress.badges.length > 0 ? (
         <View style={styles.badgesSection}>
-          <Text style={styles.badgesSectionTitle}>Your Badges</Text>
+          <ThemedText style={styles.badgesSectionTitle}>Your Badges</ThemedText>
           <View style={styles.badgesList}>
             {userProgress.badges.map((badge, index) => (
               <View key={index} style={styles.badgeCard}>
-                <Text style={styles.badgeCardEmoji}>{badge.split(' ')[1]}</Text>
-                <Text style={styles.badgeCardName}>{badge.split(' ')[0]}</Text>
+                <ThemedText style={styles.badgeCardEmoji}>{badge.split(' ')[1]}</ThemedText>
+                <ThemedText style={styles.badgeCardName}>{badge.split(' ')[0]}</ThemedText>
               </View>
             ))}
           </View>
@@ -566,7 +626,7 @@ export default function LearningScreen() {
           <View style={styles.trophyIcon}>
             <MaterialIcons name="emoji-events" size={40} color="#cbd5e1" />
           </View>
-          <Text style={styles.noBadgesText}>Complete levels to earn badges</Text>
+          <ThemedText style={styles.noBadgesText}>Complete levels to earn badges</ThemedText>
         </View>
       )}
     </View>
@@ -576,50 +636,53 @@ export default function LearningScreen() {
   const renderLanguageSwitcher = () => (
     <View style={styles.languageSwitcher}>
       <TouchableOpacity style={[styles.languageButton, styles.languageButtonActive]}>
-        <Text style={[styles.languageButtonText, styles.languageButtonTextActive]}>English</Text>
+        <ThemedText style={[styles.languageButtonText, styles.languageButtonTextActive]}>English</ThemedText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.languageButton}>
-        <Text style={styles.languageButtonText}>हिंदी</Text>
+        <ThemedText style={styles.languageButtonText}>हिंदी</ThemedText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.languageButton}>
-        <Text style={styles.languageButtonText}>मराठी</Text>
+        <ThemedText style={styles.languageButtonText}>मराठी</ThemedText>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Learning Center</Text>
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor }]}>
+      <ThemedView style={styles.header}>
+        <ThemedText variant="h2" style={styles.headerTitle}>Learning Center</ThemedText>
         {renderLanguageSwitcher()}
-      </View>
+      </ThemedView>
 
       {/* Shared Progress Bar */}
-      <View style={styles.sharedProgressContainer}>
+      <ThemedView style={styles.sharedProgressContainer}>
         <View style={styles.sharedProgressBar}>
           <View 
             style={[
               styles.sharedProgressFill, 
-              { width: `${Math.min((userProgress.totalPoints / 1000) * 100, 100)}%` }
+              { width: `${Math.min((userProgress.totalPoints / 1000) * 100, 100)}%`, backgroundColor: primaryColor }
             ]} 
             key={`shared-progress-bar-${refreshTrigger.toString()}-${userProgress.totalPoints.toString()}`}
           />
         </View>
-        <Text style={styles.sharedProgressText}>
+        <ThemedText variant="bodyMedium" style={[styles.sharedProgressText, { color: primaryColor }]}>
           {Math.min(Math.round((userProgress.totalPoints / 1000) * 100), 100)}% Complete
-        </Text>
-      </View>
+        </ThemedText>
+      </ThemedView>
 
       {/* Content Tabs */}
-      <View style={styles.tabsContainer}>
+      <ThemedView style={styles.tabsContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === "articles" && styles.activeTab]}
           onPress={() => setActiveTab("articles")}
         >
           <View style={styles.tabInner}>
-            <Text style={[styles.tabText, activeTab === "articles" && styles.activeTabText]}>
+            <ThemedText 
+              variant="button" 
+              style={[styles.tabText, activeTab === "articles" && { color: primaryColor }]}
+            >
               Articles
-            </Text>
+            </ThemedText>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -627,9 +690,25 @@ export default function LearningScreen() {
           onPress={() => setActiveTab("courses")}
         >
           <View style={styles.tabInner}>
-            <Text style={[styles.tabText, activeTab === "courses" && styles.activeTabText]}>
+            <ThemedText 
+              variant="button" 
+              style={[styles.tabText, activeTab === "courses" && { color: primaryColor }]}
+            >
               Courses
-            </Text>
+            </ThemedText>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === "resources" && styles.activeTab]}
+          onPress={() => setActiveTab("resources")}
+        >
+          <View style={styles.tabInner}>
+            <ThemedText 
+              variant="button" 
+              style={[styles.tabText, activeTab === "resources" && { color: primaryColor }]}
+            >
+              Resources
+            </ThemedText>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -641,16 +720,19 @@ export default function LearningScreen() {
           onPress={() => setActiveTab("scamquest")}
         >
           <View style={styles.tabInner}>
-            <Text style={[
-              styles.tabText, 
-              styles.scamQuestTabText,
-              activeTab === "scamquest" && styles.activeTabText,
+            <ThemedText 
+              variant="button" 
+              weight="semibold"
+              style={[
+                styles.tabText, 
+                styles.scamQuestTabText,
+              activeTab === "scamquest" && { color: primaryColor },
             ]}>
               Scam Quest
-            </Text>
+            </ThemedText>
           </View>
         </TouchableOpacity>
-      </View>
+      </ThemedView>
 
       {/* Content List */}
       {activeTab === "articles" ? (
@@ -669,10 +751,10 @@ export default function LearningScreen() {
                 <MaterialIcons name="quiz" size={24} color="#fff" />
               </View>
               <View style={styles.miniQuizContent}>
-                <Text style={styles.miniQuizTitle}>Test your knowledge!</Text>
-                <Text style={styles.miniQuizDescription}>
+                <ThemedText style={styles.miniQuizTitle}>Test your knowledge!</ThemedText>
+                <ThemedText style={styles.miniQuizDescription}>
                   Take a quick quiz based on what you've learned
-                </Text>
+                </ThemedText>
               </View>
               <MaterialIcons name="chevron-right" size={24} color="#4f46e5" />
             </TouchableOpacity>
@@ -694,10 +776,35 @@ export default function LearningScreen() {
                 <MaterialIcons name="quiz" size={24} color="#fff" />
               </View>
               <View style={styles.miniQuizContent}>
-                <Text style={styles.miniQuizTitle}>Apply your learning!</Text>
-                <Text style={styles.miniQuizDescription}>
+                <ThemedText style={styles.miniQuizTitle}>Apply your learning!</ThemedText>
+                <ThemedText style={styles.miniQuizDescription}>
                   Complete challenges based on course materials
-                </Text>
+                </ThemedText>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color="#4f46e5" />
+            </TouchableOpacity>
+          )}
+        />
+      ) : activeTab === "resources" ? (
+        <FlatList
+          data={educationalResources}
+          renderItem={renderResourceCard}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => (
+            <TouchableOpacity
+              style={styles.miniQuizCard}
+              onPress={() => setActiveTab("scamquest")}
+            >
+              <View style={styles.miniQuizIcon}>
+                <MaterialIcons name="quiz" size={24} color="#fff" />
+              </View>
+              <View style={styles.miniQuizContent}>
+                <ThemedText style={styles.miniQuizTitle}>Test your knowledge!</ThemedText>
+                <ThemedText style={styles.miniQuizDescription}>
+                  Apply what you've learned from these resources
+                </ThemedText>
               </View>
               <MaterialIcons name="chevron-right" size={24} color="#4f46e5" />
             </TouchableOpacity>
@@ -712,7 +819,7 @@ export default function LearningScreen() {
         >
           {renderScamQuestProgress()}
           
-          <Text style={styles.sectionTitle}>Challenge Map</Text>
+          <ThemedText style={styles.sectionTitle}>Challenge Map</ThemedText>
           
           <View style={styles.levelMapContainer}>
             {scamLevels.map((level, index) => (
@@ -732,13 +839,13 @@ export default function LearningScreen() {
                     level.status === 'in_progress' ? styles.inProgressDot : styles.lockedDot
                   ]}
                 >
-                  <Text style={styles.levelNumber}>{index + 1}</Text>
+                  <ThemedText style={styles.levelNumber}>{index + 1}</ThemedText>
                 </View>
               </View>
             ))}
           </View>
           
-          <Text style={styles.sectionTitle}>Available Levels</Text>
+          <ThemedText style={styles.sectionTitle}>Available Levels</ThemedText>
           
           {filteredScamLevels.map(level => (
             <TouchableOpacity 

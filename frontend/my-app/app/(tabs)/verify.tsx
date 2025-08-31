@@ -9,12 +9,17 @@ import {
   Share,
   StyleSheet,
   ActivityIndicator,
+  Animated,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { verifyPhoneNumber, VerifyNumberResponse } from "../../services/api";
 import * as Clipboard from "expo-clipboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import smsMonitorService from "../../services/smsMonitor";
+import { MaterialIcons, Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { ThemedText } from "../../components/ThemedText";
+import { ThemedView } from "../../components/ThemedView";
 // Import verification service functions and types
 import { 
   searchPhoneNumber, 
@@ -220,169 +225,275 @@ export default function VerifyScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom) }}
-    >
-      <View style={styles.wrapper}>
-        <Text style={styles.header}>🔍 Fraud-Shield Verification</Text>
-        
-        {/* Navigation Tabs */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setActiveTab('phone');
-              clearResult();
-              setPhoneSearched(false);
-            }}
-            style={[
-              styles.tab,
-              activeTab === 'phone' && styles.activeTab
-            ]}
-          >
-            <Text style={[
-              styles.tabText,
-              activeTab === 'phone' && styles.activeTabText
-            ]}>Phone Numbers</Text>
-          </TouchableOpacity>
+    <View style={{ flex: 1, backgroundColor: "#f9fafb" }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16, paddingBottom: Math.max(24, insets.bottom) }}
+        showsVerticalScrollIndicator={false}
+      >
+          <View style={{ 
+              flexDirection: "row", 
+              alignItems: "center",
+              marginBottom: 20,
+              paddingVertical: 8,
+            }}>
+            <View style={{ 
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: "#4f46e5",
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: 12,
+            }}>
+              <MaterialIcons name="verified" size={28} color="#fff" />
+            </View>
+            <Text style={{ fontSize: 24, fontWeight: "700", color: "#111827" }}>
+              Fraud-Shield Verification
+            </Text>
+          </View>
           
-          <TouchableOpacity
-            onPress={() => {
-              setActiveTab('intermediary');
-              clearResult();
-              setIntermediarySearched(false);
-            }}
-            style={[
-              styles.tab,
-              activeTab === 'intermediary' && styles.activeTab
-            ]}
-          >
-            <Text style={[
-              styles.tabText,
-              activeTab === 'intermediary' && styles.activeTabText
-            ]}>SEBI Intermediaries</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            onPress={() => {
-              setActiveTab('debarred');
-              clearResult();
-              setDebarredSearched(false);
-            }}
-            style={[
-              styles.tab,
-              activeTab === 'debarred' && styles.activeTab
-            ]}
-          >
-            <Text style={[
-              styles.tabText,
-              activeTab === 'debarred' && styles.activeTabText
-            ]}>Debarred Entities</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            onPress={() => {
-              setActiveTab('circular');
-              clearResult();
-            }}
-            style={[
-              styles.tab,
-              activeTab === 'circular' && styles.activeTab
-            ]}
-          >
-            <Text style={[
-              styles.tabText,
-              activeTab === 'circular' && styles.activeTabText
-            ]}>SEBI Circulars</Text>
-          </TouchableOpacity>
+          {/* Navigation Tabs - Enhanced with icons */}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setActiveTab('phone');
+                clearResult();
+                setPhoneSearched(false);
+              }}
+              style={[
+                styles.tab,
+                activeTab === 'phone' && styles.activeTab
+              ]}
+            >
+              <MaterialIcons 
+                name="phone" 
+                size={22} 
+                color={activeTab === 'phone' ? "#4f46e5" : "#94a3b8"} 
+              />
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'phone' && styles.activeTabText
+              ]}>Phone Numbers</ThemedText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              onPress={() => {
+                setActiveTab('intermediary');
+                clearResult();
+                setIntermediarySearched(false);
+              }}
+              style={[
+                styles.tab,
+                activeTab === 'intermediary' && styles.activeTab
+              ]}
+            >
+              <Ionicons 
+                name="people" 
+                size={22} 
+                color={activeTab === 'intermediary' ? "#4f46e5" : "#94a3b8"} 
+              />
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'intermediary' && styles.activeTabText
+              ]}>SEBI Intermediaries</ThemedText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              onPress={() => {
+                setActiveTab('debarred');
+                clearResult();
+                setDebarredSearched(false);
+              }}
+              style={[
+                styles.tab,
+                activeTab === 'debarred' && styles.activeTab
+              ]}
+            >
+              <MaterialIcons 
+                name="block" 
+                size={22} 
+                color={activeTab === 'debarred' ? "#4f46e5" : "#94a3b8"} 
+              />
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'debarred' && styles.activeTabText
+              ]}>Debarred Entities</ThemedText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              onPress={() => {
+                setActiveTab('circular');
+                clearResult();
+              }}
+              style={[
+                styles.tab,
+                activeTab === 'circular' && styles.activeTab
+              ]}
+            >
+              <MaterialIcons 
+                name="description" 
+                size={22} 
+                color={activeTab === 'circular' ? "#4f46e5" : "#94a3b8"} 
+              />
+              <ThemedText style={[
+                styles.tabText,
+                activeTab === 'circular' && styles.activeTabText
+              ]}>SEBI Circulars</ThemedText>
+            </TouchableOpacity>
         </View>
         
         {/* Phone Number Verification Section */}
         {activeTab === 'phone' && (
           <>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Check Phone Number</Text>
-              <Text style={styles.label}>Phone Number:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter phone number to verify"
-                value={phoneNumber}
-                onChangeText={(text) => {
-                  setPhoneNumber(text);
-                  setPhoneSearched(false); // Reset search status when input changes
-                }}
-                keyboardType="phone-pad"
-              />
-              <View style={styles.actionsRow}>
-                <TouchableOpacity
-                  onPress={pasteFromClipboard}
-                  style={styles.secondaryBtn}
-                >
-                  <Text style={styles.secondaryBtnText}>📋 Paste</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setPhoneNumber("")}
-                  style={styles.secondaryBtn}
-                >
-                  <Text style={styles.secondaryBtnText}>Clear</Text>
-                </TouchableOpacity>
+            <View style={styles.cardElevated}>
+              <View style={styles.cardHeader}>
+                <MaterialIcons name="phone-in-talk" size={22} color="#4f46e5" />
+                <ThemedText style={styles.cardTitle}>Check Phone Number</ThemedText>
               </View>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.label}>Phone Number:</ThemedText>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.inputField}
+                    placeholder="Enter phone number to verify"
+                    placeholderTextColor="#9ca3af"
+                    value={phoneNumber}
+                    onChangeText={(text) => {
+                      setPhoneNumber(text);
+                      setPhoneSearched(false); // Reset search status when input changes
+                    }}
+                    keyboardType="phone-pad"
+                  />
+                  {phoneNumber.length > 0 && (
+                    <TouchableOpacity
+                      onPress={() => setPhoneNumber("")}
+                      style={styles.clearButton}
+                    >
+                      <MaterialIcons name="cancel" size={18} color="#9ca3af" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                
+                <View style={styles.actionsRow}>
+                  <TouchableOpacity
+                    onPress={pasteFromClipboard}
+                    style={styles.actionButton}
+                  >
+                    <MaterialIcons name="content-paste" size={18} color="#4f46e5" />
+                    <ThemedText style={styles.actionButtonText}>Paste</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              
               <TouchableOpacity
                 onPress={() => handleVerifyPhone()}
                 disabled={!phoneNumber.trim() || isLoading}
                 style={[
-                  styles.primaryBtn,
-                  !phoneNumber.trim() || isLoading
-                    ? styles.btnDisabled
-                    : styles.btnOk,
+                  styles.verifyButton,
+                  !phoneNumber.trim() || isLoading ? styles.buttonDisabled : {},
                 ]}
               >
-                <Text style={styles.primaryBtnText}>
-                  {isLoading ? "Checking..." : "🔍 Verify Number"}
-                </Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <>
+                    <MaterialIcons name="verified-user" size={20} color="#ffffff" />
+                    <ThemedText style={styles.verifyButtonText}>Verify Number</ThemedText>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
 
-            {/* Local database result */}
+            {/* Local database result - Enhanced UI */}
             {phoneVerifyResult && (
               <View
                 style={[
-                  styles.resultCard,
+                  styles.resultCardElevated,
                   {
-                    backgroundColor: 
-                      phoneVerifyResult.status.toLowerCase() === "safe" ? "#f0fdf4" :
-                      phoneVerifyResult.status.toLowerCase() === "fraud" ? "#fef2f2" : 
-                      "#fffbeb"
+                    borderColor: 
+                      phoneVerifyResult.status.toLowerCase() === "safe" ? "#16a34a" :
+                      phoneVerifyResult.status.toLowerCase() === "fraud" ? "#dc2626" : 
+                      "#f59e0b",
+                    borderLeftWidth: 4
                   },
                 ]}
               >
-                <Text style={[
-                  styles.resultTitle,
-                  {
-                    color: 
-                      phoneVerifyResult.status.toLowerCase() === "safe" ? "#166534" :
-                      phoneVerifyResult.status.toLowerCase() === "fraud" ? "#991b1b" : 
-                      "#92400e"
-                  },
-                ]}>
-                  {phoneVerifyResult.status.toLowerCase() === "safe" ? "✅ Safe Number" : 
-                   phoneVerifyResult.status.toLowerCase() === "fraud" ? "⚠️ Fraud Number" : 
-                   "⚠️ Unknown Status"}
-                </Text>
-                <View style={{ marginBottom: 12 }}>
-                  <Text style={styles.kv}>
-                    Phone: <Text style={styles.kvValue}>{phoneVerifyResult.number}</Text>
-                  </Text>
-                  <Text style={styles.kv}>
-                    Status: <Text style={styles.kvValue}>{phoneVerifyResult.status}</Text>
-                  </Text>
-                  <Text style={styles.kv}>
-                    Reports: <Text style={styles.kvValue}>{phoneVerifyResult.reported_by}</Text>
-                  </Text>
+                <View style={styles.resultStatusContainer}>
+                  <View style={[
+                    styles.statusIconContainer,
+                    {
+                      backgroundColor: 
+                        phoneVerifyResult.status.toLowerCase() === "safe" ? "#dcfce7" :
+                        phoneVerifyResult.status.toLowerCase() === "fraud" ? "#fee2e2" : 
+                        "#fef3c7"
+                    }
+                  ]}>
+                    {phoneVerifyResult.status.toLowerCase() === "safe" ? (
+                      <MaterialIcons name="verified" size={30} color="#16a34a" />
+                    ) : phoneVerifyResult.status.toLowerCase() === "fraud" ? (
+                      <MaterialIcons name="warning" size={30} color="#dc2626" />
+                    ) : (
+                      <MaterialIcons name="help" size={30} color="#f59e0b" />
+                    )}
+                  </View>
+                  
+                  <ThemedText style={[
+                    styles.resultStatusText,
+                    {
+                      color: 
+                        phoneVerifyResult.status.toLowerCase() === "safe" ? "#16a34a" :
+                        phoneVerifyResult.status.toLowerCase() === "fraud" ? "#dc2626" : 
+                        "#f59e0b"
+                    },
+                  ]}>
+                    {phoneVerifyResult.status.toLowerCase() === "safe" ? "Safe Number" : 
+                     phoneVerifyResult.status.toLowerCase() === "fraud" ? "Fraud Number" : 
+                     "Unknown Status"}
+                  </ThemedText>
+                </View>
+                
+                <View style={styles.resultDetailsContainer}>
+                  <View style={styles.resultDetailRow}>
+                    <ThemedText style={styles.resultDetailLabel}>Phone Number:</ThemedText>
+                    <ThemedText style={styles.resultDetailValue}>{phoneVerifyResult.number}</ThemedText>
+                  </View>
+                  
+                  <View style={styles.resultDetailRow}>
+                    <ThemedText style={styles.resultDetailLabel}>Status:</ThemedText>
+                    <View style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: 
+                          phoneVerifyResult.status.toLowerCase() === "safe" ? "#dcfce7" :
+                          phoneVerifyResult.status.toLowerCase() === "fraud" ? "#fee2e2" : 
+                          "#fef3c7"
+                      }
+                    ]}>
+                      <ThemedText style={[
+                        styles.statusBadgeText,
+                        {
+                          color: 
+                            phoneVerifyResult.status.toLowerCase() === "safe" ? "#16a34a" :
+                            phoneVerifyResult.status.toLowerCase() === "fraud" ? "#dc2626" : 
+                            "#f59e0b"
+                        }
+                      ]}>
+                        {phoneVerifyResult.status}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.resultDetailRow}>
+                    <ThemedText style={styles.resultDetailLabel}>Reports:</ThemedText>
+                    <ThemedText style={styles.resultDetailValue}>{phoneVerifyResult.reported_by}</ThemedText>
+                  </View>
+                  
                   {phoneVerifyResult.last_reported && (
-                    <Text style={styles.kv}>
-                      Last Reported: <Text style={styles.kvValue}>{phoneVerifyResult.last_reported}</Text>
-                    </Text>
+                    <View style={styles.resultDetailRow}>
+                      <ThemedText style={styles.resultDetailLabel}>Last Reported:</ThemedText>
+                      <ThemedText style={styles.resultDetailValue}>{phoneVerifyResult.last_reported}</ThemedText>
+                    </View>
                   )}
                 </View>
               </View>
@@ -928,36 +1039,83 @@ export default function VerifyScreen() {
           </>
         )}
 
-        {/* Information Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>💬 About Verification Tools</Text>
-          <Text style={styles.helpText}>
-            • Phone Numbers: Check against known fraud databases and community reports
-          </Text>
-          <Text style={styles.helpText}>
-            • SEBI Intermediaries: Verify if an entity is a registered SEBI intermediary
-          </Text>
-          <Text style={styles.helpText}>
-            • Debarred Entities: Check if an entity has been debarred by SEBI
-          </Text>
-          <Text style={styles.helpText}>
-            • SEBI Circulars: Browse SEBI circulars and notifications
-          </Text>
+        {/* Enhanced Information Card */}
+        <View style={styles.infoCardElevated}>
+          <View style={styles.infoHeader}>
+            <MaterialIcons name="info-outline" size={24} color="#4f46e5" />
+            <ThemedText style={styles.infoTitle}>About Verification Tools</ThemedText>
+          </View>
+          
+          <View style={styles.infoFeatureList}>
+            <View style={styles.infoFeatureItem}>
+              <View style={[styles.infoIconContainer, { backgroundColor: "#e0e7ff" }]}>
+                <MaterialIcons name="phone" size={18} color="#4f46e5" />
+              </View>
+              <ThemedText style={styles.infoFeatureText}>
+                Check phone numbers against known fraud databases and community reports
+              </ThemedText>
+            </View>
+            
+            <View style={styles.infoFeatureItem}>
+              <View style={[styles.infoIconContainer, { backgroundColor: "#dbeafe" }]}>
+                <Ionicons name="people" size={18} color="#2563eb" />
+              </View>
+              <ThemedText style={styles.infoFeatureText}>
+                Verify if an entity is a registered SEBI intermediary
+              </ThemedText>
+            </View>
+            
+            <View style={styles.infoFeatureItem}>
+              <View style={[styles.infoIconContainer, { backgroundColor: "#fee2e2" }]}>
+                <MaterialIcons name="block" size={18} color="#dc2626" />
+              </View>
+              <ThemedText style={styles.infoFeatureText}>
+                Check if an entity has been debarred by SEBI
+              </ThemedText>
+            </View>
+            
+            <View style={styles.infoFeatureItem}>
+              <View style={[styles.infoIconContainer, { backgroundColor: "#f0fdf4" }]}>
+                <MaterialIcons name="description" size={18} color="#16a34a" />
+              </View>
+              <ThemedText style={styles.infoFeatureText}>
+                Browse SEBI circulars and notifications
+              </ThemedText>
+            </View>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6" },
-  wrapper: { padding: 24 },
+  container: { flex: 1, backgroundColor: "#f9fafb" },
+  wrapper: { padding: 16 },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingVertical: 8,
+  },
+  headerIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#4f46e5",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+    elevation: 2,
+    shadowColor: "#4f46e5",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "700",
     color: "#111827",
-    marginBottom: 16,
-    textAlign: "center",
   },
   // Tab Navigation
   tabContainer: {
@@ -1171,5 +1329,179 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
     lineHeight: 20,
+  },
+  
+  // Enhanced UI styles
+  cardElevated: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+  },
+  inputField: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#111827',
+  },
+  clearButton: {
+    padding: 4,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    marginTop: 8,
+  },
+  actionButtonText: {
+    color: '#4f46e5',
+    fontWeight: '600',
+    marginLeft: 4,
+    fontSize: 14,
+  },
+  verifyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4f46e5',
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  verifyButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: '#d1d5db',
+  },
+  resultCardElevated: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    overflow: 'hidden',
+  },
+  resultStatusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  statusIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  resultStatusText: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  resultDetailsContainer: {
+    padding: 16,
+  },
+  resultDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    justifyContent: 'space-between',
+  },
+  resultDetailLabel: {
+    fontSize: 14,
+    color: '#6b7280',
+    flex: 1,
+  },
+  resultDetailValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    flex: 2,
+  },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+  },
+  statusBadgeText: {
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  infoCardElevated: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginLeft: 8,
+  },
+  infoFeatureList: {
+    gap: 12,
+  },
+  infoFeatureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  infoIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  infoFeatureText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#4b5563',
   },
 });

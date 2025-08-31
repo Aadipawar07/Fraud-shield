@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
   View,
-  Text,
-  TextInput,
+  TextInput as RNTextInput,
   TouchableOpacity,
   ScrollView,
   Alert,
@@ -12,6 +11,15 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatConfidencePercentage } from "../../utils/formatters";
 import smsMonitorService, { SMSMessage } from "../../services/smsMonitor";
+import { ThemedText } from "../../components/ThemedText";
+import { Card } from "../../components/Card";
+import { ThemedView } from "../../components/ThemedView";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
+import { Spacing } from "../../constants/Spacing";
+import { BorderRadius, Shadow } from "../../constants/Shape";
+import { useTheme } from "../../context/ThemeContext";
+import { useThemeColor } from "../../hooks/useThemeColor";
 
 export default function ReportScreen() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -116,13 +124,24 @@ export default function ReportScreen() {
     });
   };
 
+  const { colorScheme } = useTheme();
+  const primaryColor = useThemeColor({}, "tint");
+  const successColor = useThemeColor({}, "success");
+  const warningColor = useThemeColor({}, "warning");
+  const dangerColor = useThemeColor({}, "danger");
+  const neutralColor = useThemeColor({}, "textSecondary");
+  const backgroundColor = useThemeColor({}, "background");
+
   return (
     <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: Math.max(24, insets.bottom) }}
+      style={[styles.container, { backgroundColor }]}
+      contentContainerStyle={{ paddingBottom: Math.max(Spacing.xl, insets.bottom) }}
     >
       <View style={styles.wrapper}>
-        <Text style={styles.header}>🚩 Report Fraud</Text>
+        {/* Header */}
+        <ThemedView style={styles.header}>
+          <ThemedText variant="h2" style={styles.headerText}>🚩 Report Fraud</ThemedText>
+        </ThemedView>
 
         {/* Tabs */}
         <View style={styles.tabsRow}>
@@ -133,14 +152,15 @@ export default function ReportScreen() {
               activeTab === "manual" && styles.tabBtnActive,
             ]}
           >
-            <Text
+            <ThemedText
+              variant="button"
               style={[
                 styles.tabText,
                 activeTab === "manual" && styles.tabTextActive,
               ]}
             >
               Manual Report
-            </Text>
+            </ThemedText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setActiveTab("detected")}
@@ -149,34 +169,35 @@ export default function ReportScreen() {
               activeTab === "detected" && styles.tabBtnActive,
             ]}
           >
-            <Text
+            <ThemedText
+              variant="button"
               style={[
                 styles.tabText,
                 activeTab === "detected" && styles.tabTextActive,
               ]}
             >
               Auto-Detected ({fraudReports.length})
-            </Text>
+            </ThemedText>
           </TouchableOpacity>
         </View>
 
         {activeTab === "manual" ? (
           <>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Report Suspicious SMS</Text>
+            <Card style={styles.card}>
+              <ThemedText variant="h3" style={styles.cardTitle}>Report Suspicious SMS</ThemedText>
 
-              <Text style={styles.label}>Sender Phone Number:</Text>
-              <TextInput
-                style={styles.input}
+              <ThemedText variant="bodyMedium" style={styles.label}>Sender Phone Number:</ThemedText>
+              <Input
+                containerStyle={styles.input}
                 placeholder="Enter phone number (e.g., +1234567890)"
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 keyboardType="phone-pad"
               />
 
-              <Text style={styles.label}>Fraudulent Message:</Text>
-              <TextInput
-                style={[styles.input, styles.multiline]}
+              <ThemedText variant="bodyMedium" style={styles.label}>Fraudulent Message:</ThemedText>
+              <Input
+                containerStyle={[styles.input, styles.multiline]}
                 multiline
                 placeholder="Paste the suspicious message here..."
                 value={message}
@@ -184,11 +205,11 @@ export default function ReportScreen() {
                 textAlignVertical="top"
               />
 
-              <Text style={styles.label}>
+              <ThemedText variant="bodyMedium" style={styles.label}>
                 Additional Information (Optional):
-              </Text>
-              <TextInput
-                style={[styles.input, styles.multiline]}
+              </ThemedText>
+              <Input
+                containerStyle={[styles.input, styles.multiline]}
                 multiline
                 placeholder="Any additional context or information..."
                 value={additionalInfo}
@@ -196,97 +217,108 @@ export default function ReportScreen() {
                 textAlignVertical="top"
               />
 
-              <TouchableOpacity onPress={handleReport} style={styles.submitBtn}>
-                <Text style={styles.submitBtnText}>🚩 Submit Report</Text>
-              </TouchableOpacity>
-            </View>
+              <Button 
+                title="🚩 Submit Report"
+                variant="danger"
+                size="large"
+                onPress={handleReport}
+                style={styles.submitBtn}
+              />
+            </Card>
 
-            <View style={styles.infoCard}>
-              <Text style={styles.infoTitle}>📝 Why Report?</Text>
-              <Text style={styles.infoText}>
+            <Card style={styles.infoCard}>
+              <ThemedText variant="bodyLarge" weight="semibold" style={styles.infoTitle}>📝 Why Report?</ThemedText>
+              <ThemedText variant="bodyMedium" style={styles.infoText}>
                 • Help protect other users from scams
-              </Text>
-              <Text style={styles.infoText}>
+              </ThemedText>
+              <ThemedText variant="bodyMedium" style={styles.infoText}>
                 • Improve our fraud detection algorithms
-              </Text>
-              <Text style={styles.infoText}>
+              </ThemedText>
+              <ThemedText variant="bodyMedium" style={styles.infoText}>
                 • Build a community defense against fraud
-              </Text>
-            </View>
+              </ThemedText>
+            </Card>
           </>
         ) : (
           <>
             <View style={styles.listHeaderRow}>
-              <Text style={styles.cardTitle}>Detected Fraud Messages</Text>
+              <ThemedText variant="h3" style={styles.cardTitle}>Detected Fraud Messages</ThemedText>
               <TouchableOpacity onPress={loadFraudReports}>
-                <Text style={[styles.linkText, { color: "#2563eb" }]}>
+                <ThemedText variant="button" style={styles.linkText}>
                   🔄 Refresh
-                </Text>
+                </ThemedText>
               </TouchableOpacity>
             </View>
 
-            <TextInput
+            <Input
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Search by sender or message..."
-              style={styles.search}
+              containerStyle={styles.search}
             />
 
-            <TouchableOpacity onPress={exportAll} style={styles.exportBtn}>
-              <Text style={styles.exportBtnText}>
-                ⬇️ Export All Reports (JSON)
-              </Text>
-            </TouchableOpacity>
+            <Button
+              title="⬇️ Export All Reports (JSON)"
+              variant="outline"
+              size="medium"
+              onPress={exportAll}
+              style={styles.exportBtn}
+            />
 
             {filteredReports.length > 0 ? (
               filteredReports.map((report) => {
                 const isExpanded = expandedIds.has(report.id);
                 return (
-                  <View key={report.id} style={styles.reportCard}>
+                  <Card key={report.id} style={styles.reportCard}>
                     <View style={styles.reportHeaderRow}>
-                      <Text style={[styles.badge, { color: "#dc2626" }]}>
+                      <ThemedText 
+                        variant="label" 
+                        weight="semibold" 
+                        style={[styles.badge, { color: dangerColor }]}
+                      >
                         🚨 FRAUD DETECTED
-                      </Text>
-                      <Text style={styles.timestamp}>
+                      </ThemedText>
+                      <ThemedText variant="caption" style={styles.timestamp}>
                         {formatTimeAgo(report.timestamp)}
-                      </Text>
+                      </ThemedText>
                     </View>
-                    <Text style={styles.sender}>From: {report.sender}</Text>
-                    <Text
+                    <ThemedText variant="bodyMedium" style={styles.sender}>From: {report.sender}</ThemedText>
+                    <ThemedText
+                      variant="bodyMedium"
                       style={styles.msg}
                       numberOfLines={isExpanded ? 12 : 3}
                     >
                       {report.message}
-                    </Text>
+                    </ThemedText>
 
-                    <View style={styles.detailBox}>
-                      <Text style={styles.detailTitle}>Detection Details</Text>
+                    <ThemedView style={styles.detailBox}>
+                      <ThemedText variant="bodyMedium" weight="semibold" style={styles.detailTitle}>Detection Details</ThemedText>
                       {!!report.fraudReason && (
-                        <Text style={styles.detailText}>
+                        <ThemedText variant="bodySmall" style={styles.detailText}>
                           {report.fraudReason}
-                        </Text>
+                        </ThemedText>
                       )}
                       {report.confidence && (
-                        <Text style={styles.detailConfidence}>
+                        <ThemedText variant="caption" style={styles.detailConfidence}>
                           Confidence: {formatConfidencePercentage(report.confidence)}
-                        </Text>
+                        </ThemedText>
                       )}
-                    </View>
+                    </ThemedView>
 
                     <View style={styles.actionsRow}>
                       <TouchableOpacity
                         onPress={() => toggleExpanded(report.id)}
                         style={styles.actionBtn}
                       >
-                        <Text style={styles.actionText}>
+                        <ThemedText variant="button" style={styles.actionText}>
                           {isExpanded ? "Collapse" : "Expand"}
-                        </Text>
+                        </ThemedText>
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => shareReport(report)}
                         style={styles.actionBtn}
                       >
-                        <Text style={styles.actionText}>Share</Text>
+                        <ThemedText variant="button" style={styles.actionText}>Share</ThemedText>
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
@@ -305,21 +337,21 @@ export default function ReportScreen() {
                         }}
                         style={styles.actionBtn}
                       >
-                        <Text style={[styles.actionText, { color: "#dc2626" }]}>
+                        <ThemedText variant="button" style={[styles.actionText, { color: dangerColor }]}>
                           Delete
-                        </Text>
+                        </ThemedText>
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </Card>
                 );
               })
             ) : (
-              <View style={styles.emptyCard}>
-                <Text style={styles.emptyTitle}>🛡️ No fraud detected yet</Text>
-                <Text style={styles.emptySubtitle}>
+              <Card style={styles.emptyCard}>
+                <ThemedText variant="bodyLarge" weight="semibold" style={styles.emptyTitle}>🛡️ No fraud detected yet</ThemedText>
+                <ThemedText variant="bodyMedium" secondary style={styles.emptySubtitle}>
                   Start SMS monitoring to automatically detect fraud
-                </Text>
-              </View>
+                </ThemedText>
+              </Card>
             )}
           </>
         )}
@@ -329,156 +361,139 @@ export default function ReportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6" },
-  wrapper: { padding: 24 },
+  container: { 
+    flex: 1, 
+  },
+  wrapper: { 
+    padding: 24 
+  },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#111827",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
-    textAlign: "center",
+  },
+  headerText: {
+    fontWeight: "bold",
+    marginBottom: 0,
   },
   tabsRow: {
     flexDirection: "row",
     backgroundColor: "#e5e7eb",
-    borderRadius: 12,
+    borderRadius: BorderRadius.md,
     padding: 4,
     marginBottom: 16,
   },
   tabBtn: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.sm,
   },
   tabBtnActive: {
     backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    ...Shadow.md,
   },
   tabText: { textAlign: "center", fontWeight: "600", color: "#6b7280" },
   tabTextActive: { color: "#111827" },
   card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    marginBottom: Spacing.md,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    marginBottom: Spacing.xs,
   },
-  label: { color: "#4b5563", marginBottom: 6 },
+  label: { 
+    marginBottom: Spacing.xs 
+  },
   input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
-    fontSize: 14,
-    color: "#111827",
+    marginBottom: Spacing.sm,
   },
-  multiline: { minHeight: 100 },
+  multiline: { 
+    minHeight: 100 
+  },
   submitBtn: {
-    backgroundColor: "#dc2626",
-    borderRadius: 12,
-    paddingVertical: 12,
+    marginTop: Spacing.sm,
   },
-  submitBtnText: {
-    color: "#ffffff",
-    textAlign: "center",
-    fontWeight: "700",
-    fontSize: 16,
+  infoCard: { 
+    backgroundColor: "#eff6ff",
+    marginTop: Spacing.md,
   },
-  infoCard: { backgroundColor: "#eff6ff", borderRadius: 16, padding: 16 },
-  infoTitle: { color: "#1d4ed8", fontWeight: "700", marginBottom: 8 },
-  infoText: { color: "#1e40af", fontSize: 12, marginBottom: 4 },
+  infoTitle: { 
+    marginBottom: Spacing.sm,
+  },
+  infoText: { 
+    marginBottom: Spacing.xs,
+  },
   listHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   search: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
-    fontSize: 14,
-    color: "#111827",
+    marginBottom: Spacing.sm,
   },
   exportBtn: {
-    backgroundColor: "#f3f4f6",
-    borderRadius: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
-  exportBtnText: { textAlign: "center", fontWeight: "600", color: "#111827" },
   reportCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+    padding: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   reportHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 6,
+    marginBottom: Spacing.xs,
   },
-  badge: { fontSize: 12, fontWeight: "700" },
-  timestamp: { fontSize: 11, color: "#6b7280" },
-  sender: { fontSize: 13, color: "#4b5563", marginBottom: 4 },
-  msg: { fontSize: 14, color: "#111827", marginBottom: 6 },
-  detailBox: { backgroundColor: "#fef2f2", padding: 8, borderRadius: 8 },
-  detailTitle: {
-    color: "#991b1b",
-    fontSize: 12,
+  badge: {
     fontWeight: "700",
-    marginBottom: 4,
   },
-  detailText: { color: "#991b1b", fontSize: 12 },
-  detailConfidence: { color: "#b91c1c", fontSize: 12, marginTop: 2 },
+  timestamp: {
+    opacity: 0.7,
+  },
+  sender: {
+    marginBottom: Spacing.xs,
+  },
+  msg: {
+    marginBottom: Spacing.xs,
+  },
+  detailBox: { 
+    backgroundColor: "#fef2f2", 
+    padding: Spacing.sm, 
+    borderRadius: BorderRadius.sm,
+    marginBottom: Spacing.xs,
+  },
+  detailTitle: {
+    marginBottom: Spacing.xs,
+  },
+  detailText: {},
+  detailConfidence: { 
+    marginTop: Spacing.xs,
+  },
   actionsRow: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 12,
-    marginTop: 6,
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
   },
-  actionBtn: { paddingVertical: 6, paddingHorizontal: 8 },
-  actionText: { color: "#2563eb", fontWeight: "600", fontSize: 12 },
-  linkText: { fontWeight: "600" },
+  actionBtn: { 
+    paddingVertical: Spacing.xs, 
+    paddingHorizontal: Spacing.sm,
+  },
+  actionText: {},
+  linkText: {
+    color: "#2563eb",
+  },
   emptyCard: {
-    backgroundColor: "#f9fafb",
-    borderRadius: 12,
-    padding: 16,
+    padding: Spacing.md,
     alignItems: "center",
   },
-  emptyTitle: { color: "#6b7280", textAlign: "center" },
-  emptySubtitle: {
-    color: "#9ca3af",
+  emptyTitle: { 
     textAlign: "center",
-    fontSize: 12,
-    marginTop: 6,
+  },
+  emptySubtitle: {
+    textAlign: "center",
+    marginTop: Spacing.xs,
   },
 });
