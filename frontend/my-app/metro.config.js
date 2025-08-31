@@ -7,10 +7,15 @@ const config = getDefaultConfig(__dirname);
 config.resolver.sourceExts = [...config.resolver.sourceExts, 'json'];
 config.resolver.assetExts = config.resolver.assetExts.filter(ext => ext !== 'json');
 
-// Temporary: disable NativeWind to fix bundling issue
-// const { withNativeWind } = require('nativewind/metro');
-// module.exports = withNativeWind(config, {
-//   input: './app/global.css',
-// });
+// Fix for symbolication issues with <anonymous> files
+config.transformer.minifierConfig = {
+  mangle: {
+    keep_classnames: true,
+    keep_fnames: true,
+  },
+};
+
+// Make source maps more reliable
+config.transformer.sourceMap = true;
 
 module.exports = config;

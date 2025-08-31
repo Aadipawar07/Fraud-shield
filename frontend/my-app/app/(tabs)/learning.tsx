@@ -9,9 +9,10 @@ import {
   FlatList,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router, useRouter } from "expo-router";
+import { router, useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getLearningContent } from "../../services/learningService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Helper function to get the right image based on article ID
 const getArticleImage = (id: string) => {
@@ -79,7 +80,10 @@ interface UserProgress {
 
 export default function LearningScreen() {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState<"articles" | "courses" | "scamquest">("articles");
+  const { activeTab: initialTab } = useLocalSearchParams<{ activeTab?: string }>();
+  const [activeTab, setActiveTab] = useState<"articles" | "courses" | "scamquest">(
+    initialTab === "scamquest" ? "scamquest" : "articles"
+  );
   const [articles, setArticles] = useState<Article[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [scamLevels, setScamLevels] = useState<ScamLevel[]>([]);
@@ -91,15 +95,32 @@ export default function LearningScreen() {
   });
   
   // Fetch learning content
+  // Extract loadUserProgress function to make it reusable
+  const loadUserProgress = async () => {
+    try {
+      const savedProgress = await AsyncStorage.getItem('USER_PROGRESS');
+      if (savedProgress) {
+        const parsedProgress = JSON.parse(savedProgress);
+        console.log("Loaded user progress from storage:", parsedProgress);
+        setUserProgress(parsedProgress);
+      }
+    } catch (error) {
+      console.error("Error loading user progress:", error);
+    }
+  };
+
   useEffect(() => {
     const content = getLearningContent();
     setArticles(content.articles);
     setCourses(content.courses);
     
+    // Load user progress from AsyncStorage
+    loadUserProgress();
+    
     // Categories section has been removed
     
-    // Initialize Scam Quest levels
-    setScamLevels([
+    // Get scam levels - defining the default levels
+    const mockLevels: ScamLevel[] = [
       {
         id: 'l1',
         title: 'Fake Advisor',
@@ -150,19 +171,67 @@ export default function LearningScreen() {
         color: '#118AB2',
         category: 'Card Fraud',
       },
-    ]);
+    ];
     
-    // Initialize user progress data with zero points
-    setUserProgress({
-      totalPoints: 0,
-      badges: [],
-      completedLevels: [],
-      currentLevel: 'l1',
-    });
+    // Initialize and then update levels based on user progress
+    const loadScamLevels = async () => {
+      try {
+        const savedProgress = await AsyncStorage.getItem('USER_PROGRESS');
+        if (savedProgress) {
+          const parsedProgress = JSON.parse(savedProgress);
+          console.log("Loading progress:", parsedProgress);
+          
+          // Make sure we have valid data
+          if (!parsedProgress.completedLevels || !Array.isArray(parsedProgress.completedLevels)) {
+            console.log("Invalid or missing completedLevels, using default levels");
+            setScamLevels(mockLevels as ScamLevel[]);
+            return;
+          }
+          
+          // Update level status based on completed levels
+          const updatedLevels = mockLevels.map((level, index) => {
+            // Only mark as completed if explicitly in the completedLevels array
+            if (parsedProgress.completedLevels.includes(level.id)) {
+              return { ...level, status: 'completed' as const };
+            } 
+            // Only the current level should be in_progress
+            else if (level.id === parsedProgress.currentLevel) {
+              return { ...level, status: 'in_progress' as const };
+            } 
+            // Previous levels that aren't marked completed should be unlocked
+            else if (index < parseInt(parsedProgress.currentLevel.substring(1)) - 1) {
+              return { ...level, status: 'in_progress' as const };
+            }
+            // All other levels remain locked
+            else {
+              return { ...level, status: 'locked' as const };
+            }
+          });
+          
+          console.log("Updated levels:", updatedLevels.map(l => `${l.id}: ${l.status}`).join(', '));
+          setScamLevels(updatedLevels as ScamLevel[]);
+        } else {
+          // Default initialization - only first level is unlocked
+          setScamLevels(mockLevels.map((level, index) => ({
+            ...level,
+            status: index === 0 ? 'in_progress' as const : 'locked' as const
+          })) as ScamLevel[]);
+        }
+      } catch (error) {
+        console.error("Error loading scam levels:", error);
+        setScamLevels(mockLevels as ScamLevel[]);
+      }
+    };
+    
+    loadScamLevels();
+    
+    // User progress is now loaded from AsyncStorage in the earlier useEffect
+    // This is just a fallback in case no saved progress is found
   }, []);
   
   // Add function to update points when completing a level
-  const completeLevel = (levelId: string) => {
+  const completeLevel = async (levelId: string) => {
+    console.log("Completing level:", levelId);
     // Find the level that was completed
     const completedLevel = scamLevels.find(level => level.id === levelId);
     
@@ -180,8 +249,35 @@ export default function LearningScreen() {
       
       setScamLevels(updatedLevels);
       
-      // Add points
-      const newTotalPoints = userProgress.totalPoints + (completedLevel?.points || 0);
+      // Try to get stored points from AsyncStorage
+      let pointsToAdd = completedLevel?.points || 0;
+      let newTotalPoints = userProgress.totalPoints + pointsToAdd;
+      
+      try {
+        const pointsData = await AsyncStorage.getItem('LEVEL_POINTS');
+        if (pointsData) {
+          const parsedData = JSON.parse(pointsData);
+          if (parsedData.levelId === levelId) {
+            // Use the points from the quiz completion
+            pointsToAdd = parsedData.points;
+            
+            // If we have a totalPoints value, use it directly instead of calculating
+            if (parsedData.totalPoints) {
+              newTotalPoints = parsedData.totalPoints;
+              console.log("Using total points from storage:", newTotalPoints);
+            } else {
+              // Fall back to calculation if no total provided
+              newTotalPoints = userProgress.totalPoints + pointsToAdd;
+            }
+            
+            console.log("Using points from storage:", pointsToAdd);
+          }
+        }
+      } catch (error) {
+        console.error("Error getting points data:", error);
+      }
+      
+      console.log("Adding points:", pointsToAdd, "New total:", newTotalPoints);
       
       // Check if user earned a new badge
       let newBadges = [...userProgress.badges];
@@ -197,6 +293,18 @@ export default function LearningScreen() {
         completedLevels: [...userProgress.completedLevels, levelId],
         currentLevel: `l${parseInt(levelId.substring(1)) + 1}`,
       });
+      
+      // Save to AsyncStorage for persistence
+      try {
+        await AsyncStorage.setItem('USER_PROGRESS', JSON.stringify({
+          totalPoints: newTotalPoints,
+          badges: newBadges,
+          completedLevels: [...userProgress.completedLevels, levelId],
+          currentLevel: `l${parseInt(levelId.substring(1)) + 1}`,
+        }));
+      } catch (error) {
+        console.error("Error saving user progress:", error);
+      }
     }
   };
 
@@ -204,6 +312,48 @@ export default function LearningScreen() {
   const filteredArticles = articles;
   const filteredCourses = courses;
   const filteredScamLevels = scamLevels;
+  
+  // Effect to complete the in-progress level when coming back from quiz completion
+  // Add a refreshTrigger state to force progress bar updates
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+  
+  useEffect(() => {
+    const checkQuizCompletion = async () => {
+      if (activeTab === "scamquest") {
+        try {
+          // Check if there's a saved quiz completion
+          const completionData = await AsyncStorage.getItem('QUIZ_COMPLETION');
+          const pointsData = await AsyncStorage.getItem('LEVEL_POINTS');
+          
+          if (completionData && pointsData) {
+            const completion = JSON.parse(completionData);
+            const points = JSON.parse(pointsData);
+            console.log("Found quiz completion data:", completion);
+            console.log("Found points data:", points);
+            
+            // Clear the data so we don't process it again
+            await AsyncStorage.removeItem('QUIZ_COMPLETION');
+            await AsyncStorage.removeItem('LEVEL_POINTS');
+            
+            // Complete the level
+            if (completion.completed && completion.levelId) {
+              await completeLevel(completion.levelId);
+              
+              // Reload user progress to ensure latest data
+              await loadUserProgress();
+              
+              // Force progress bar refresh after updating points
+              setRefreshTrigger(prev => prev + 1);
+            }
+          } 
+        } catch (error) {
+          console.error("Error checking quiz completion:", error);
+        }
+      }
+    };
+    
+    checkQuizCompletion();
+  }, [activeTab]);
 
   // Render an article card
   const renderArticleCard = ({ item }: { item: Article }) => (
@@ -333,6 +483,33 @@ export default function LearningScreen() {
     );
   };
 
+  // Function to reset progress (for testing purposes)
+  const resetProgress = async () => {
+    try {
+      await AsyncStorage.removeItem('USER_PROGRESS');
+      await AsyncStorage.removeItem('QUIZ_COMPLETION');
+      await AsyncStorage.removeItem('LEVEL_POINTS');
+      
+      // Reset to initial state
+      setUserProgress({
+        totalPoints: 0,
+        badges: [],
+        completedLevels: [],
+        currentLevel: 'l1',
+      });
+      
+      // Reset levels
+      setScamLevels(prev => prev.map((level, index) => ({
+        ...level,
+        status: index === 0 ? 'in_progress' as const : 'locked' as const
+      })));
+      
+      console.log("Progress reset complete");
+    } catch (error) {
+      console.error("Error resetting progress:", error);
+    }
+  };
+  
   // Render a Scam Quest progress dashboard
   const renderScamQuestProgress = () => (
     <View style={styles.progressDashboard}>
@@ -344,10 +521,25 @@ export default function LearningScreen() {
             <Text style={styles.totalPoints}>{userProgress.totalPoints} Points</Text>
           </View>
         </View>
+        
+        {/* Add reset button in dev mode */}
+        <TouchableOpacity 
+          style={styles.resetButton}
+          onPress={resetProgress}
+        >
+          <MaterialIcons name="refresh" size={16} color="#fff" />
+          <Text style={styles.resetButtonText}>Reset</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.overallProgressContainer}>
         <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: `${(userProgress.totalPoints / 1000) * 100}%` }]} />
+          <View 
+            style={[
+              styles.progressBar, 
+              { width: `${Math.min((userProgress.totalPoints / 1000) * 100, 100)}%` }
+            ]} 
+            key={`progress-bar-${refreshTrigger.toString()}-${userProgress.totalPoints.toString()}`}
+          />
         </View>
         <View style={styles.progressLabels}>
           <Text style={styles.progressLabel}>Beginner</Text>
@@ -371,7 +563,9 @@ export default function LearningScreen() {
         </View>
       ) : (
         <View style={styles.noBadgesContainer}>
-          <MaterialIcons name="emoji-events" size={48} color="#cbd5e1" />
+          <View style={styles.trophyIcon}>
+            <MaterialIcons name="emoji-events" size={40} color="#cbd5e1" />
+          </View>
           <Text style={styles.noBadgesText}>Complete levels to earn badges</Text>
         </View>
       )}
@@ -403,9 +597,17 @@ export default function LearningScreen() {
       {/* Shared Progress Bar */}
       <View style={styles.sharedProgressContainer}>
         <View style={styles.sharedProgressBar}>
-          <View style={[styles.sharedProgressFill, { width: '35%' }]} />
+          <View 
+            style={[
+              styles.sharedProgressFill, 
+              { width: `${Math.min((userProgress.totalPoints / 1000) * 100, 100)}%` }
+            ]} 
+            key={`shared-progress-bar-${refreshTrigger.toString()}-${userProgress.totalPoints.toString()}`}
+          />
         </View>
-        <Text style={styles.sharedProgressText}>35% Complete</Text>
+        <Text style={styles.sharedProgressText}>
+          {Math.min(Math.round((userProgress.totalPoints / 1000) * 100), 100)}% Complete
+        </Text>
       </View>
 
       {/* Content Tabs */}
@@ -414,33 +616,39 @@ export default function LearningScreen() {
           style={[styles.tab, activeTab === "articles" && styles.activeTab]}
           onPress={() => setActiveTab("articles")}
         >
-          <Text style={[styles.tabText, activeTab === "articles" && styles.activeTabText]}>
-            Articles
-          </Text>
+          <View style={styles.tabInner}>
+            <Text style={[styles.tabText, activeTab === "articles" && styles.activeTabText]}>
+              Articles
+            </Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, activeTab === "courses" && styles.activeTab]}
           onPress={() => setActiveTab("courses")}
         >
-          <Text style={[styles.tabText, activeTab === "courses" && styles.activeTabText]}>
-            Courses
-          </Text>
+          <View style={styles.tabInner}>
+            <Text style={[styles.tabText, activeTab === "courses" && styles.activeTabText]}>
+              Courses
+            </Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.tab, 
+            styles.scamQuestTab,
             activeTab === "scamquest" && styles.activeTab,
-            styles.scamQuestTab
           ]}
           onPress={() => setActiveTab("scamquest")}
         >
-          <Text style={[
-            styles.tabText, 
-            activeTab === "scamquest" && styles.activeTabText,
-            styles.scamQuestTabText
-          ]}>
-            Scam Quest
-          </Text>
+          <View style={styles.tabInner}>
+            <Text style={[
+              styles.tabText, 
+              styles.scamQuestTabText,
+              activeTab === "scamquest" && styles.activeTabText,
+            ]}>
+              Scam Quest
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -538,13 +746,6 @@ export default function LearningScreen() {
               disabled={level.status === 'locked'}
               onPress={() => {
                 if (level.status !== 'locked') {
-                  // This simulates completing a level when clicked for demo purposes
-                  // In a real app, you'd complete the level after quiz completion
-                  // For now, we'll add a simple dialog to demonstrate points adding
-                  if (level.status === 'in_progress') {
-                    completeLevel(level.id);
-                  }
-                  
                   router.push({
                     pathname: '/learning/quest/[id]',
                     params: { id: level.id }
@@ -608,7 +809,7 @@ const styles = StyleSheet.create({
   // Shared progress bar
   sharedProgressContainer: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
@@ -618,21 +819,30 @@ const styles = StyleSheet.create({
   },
   sharedProgressBar: {
     flex: 1,
-    height: 6,
+    height: 8,
     backgroundColor: "#e2e8f0",
-    borderRadius: 3,
+    borderRadius: 4,
     marginRight: 12,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#d1d5db",
   },
   sharedProgressFill: {
-    height: 6,
+    height: 8,
     backgroundColor: "#4f46e5",
-    borderRadius: 3,
+    borderRadius: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 2, // for Android shadow
   },
   sharedProgressText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "600",
     color: "#4f46e5",
+    minWidth: 80,
+    textAlign: "right",
   },
   // Category styles removed but keeping empty definitions for compatibility
   categoryContainer: {
@@ -655,25 +865,38 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#e2e8f0",
     backgroundColor: "#fff",
-    height: 52, // Fixed height for consistency
+    height: 54, // Increased height for better touch targets
+    elevation: 2, // Add shadow for Android
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   tab: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center", // Center content vertically
     height: "100%", // Full height of container
+    paddingHorizontal: 4, // Add some horizontal padding
+  },
+  tabInner: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
   activeTab: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3, // Slightly thicker for emphasis
     borderBottomColor: "#4f46e5",
   },
   tabText: {
     fontSize: 16,
     fontWeight: "600",
     color: "#64748b",
+    textAlign: "center", // Ensure text is centered
   },
   activeTabText: {
     color: "#4f46e5",
+    fontWeight: "700", // Make active tab text bolder
   },
   contentContainer: {
     padding: 16,
@@ -764,17 +987,10 @@ const styles = StyleSheet.create({
   
   // ScamQuest tab styling
   scamQuestTab: {
-    backgroundColor: "#fff0e5",
-    borderRadius: 0, // Remove border radius for consistency
-    marginHorizontal: 0, // Remove margin for consistency
-    shadowColor: "transparent", // Remove shadow for consistency
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
+    backgroundColor: "#fff0e5", // Keep the custom background color
   },
   scamQuestTabText: {
-    color: "#ea580c",
+    color: "#ea580c", // Keep the custom text color
     fontWeight: "700",
   },
   
@@ -807,31 +1023,41 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 1,
     borderColor: "#f1f5f9",
-    marginBottom: 8,
+    marginBottom: 16, // Increased margin for better separation
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16, // Increased margin for better spacing
+    borderBottomWidth: 1, // Add a separator
+    borderBottomColor: "#f1f5f9",
+    paddingBottom: 12, // Add padding to the bottom
   },
   progressInfo: {
     flex: 1,
   },
   progressTitle: {
-    fontSize: 16,
+    fontSize: 18, // Larger title
     fontWeight: "700",
     color: "#111827",
-    marginBottom: 4,
+    marginBottom: 8, // More space below title
   },
   pointsContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#fffbeb", // Light yellow background
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20, // Pill shape
+    borderWidth: 1,
+    borderColor: "#fef3c7",
+    alignSelf: "flex-start", // Ensures the container only takes the needed width
   },
   totalPoints: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#f59e0b",
+    fontWeight: "700", // Bolder for emphasis
+    color: "#d97706", // Darker orange for better contrast
     marginLeft: 6,
   },
   progressBadges: {
@@ -844,27 +1070,36 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   overallProgressContainer: {
-    marginTop: 8,
+    marginTop: 16,
   },
   progressBarContainer: {
-    height: 8,
+    height: 10, // Slightly taller
     backgroundColor: "#e2e8f0",
-    borderRadius: 4,
+    borderRadius: 6, // Slightly more rounded
     overflow: "hidden",
+    borderWidth: 1, // Add border
+    borderColor: "#cbd5e1",
   },
   progressBar: {
-    height: 8,
+    height: 10,
     backgroundColor: "#4f46e5",
-    borderRadius: 4,
+    borderRadius: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 2, // for Android shadow
   },
   progressLabels: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 8,
+    marginTop: 6, // Space between bar and labels
+    paddingHorizontal: 4, // Align labels better
   },
   progressLabel: {
-    fontSize: 12,
-    color: "#64748b",
+    fontSize: 13, // Slightly larger
+    fontWeight: "600", // Bolder
+    color: "#475569", // Darker for better visibility
   },
   
   // Level Map
@@ -1055,29 +1290,37 @@ const styles = StyleSheet.create({
   
   // Badge section styles
   badgesSection: {
-    marginTop: 20,
+    marginTop: 24,
+    marginBottom: 24,  // More margin for separation
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 16, // Larger radius for consistency
     padding: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 3,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
   },
   badgesSectionTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#1e293b",
     marginBottom: 16,
+    borderBottomWidth: 1, // Add separator
+    borderBottomColor: "#f1f5f9",
+    paddingBottom: 12,
   },
   badgesList: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginHorizontal: -8, // Compensate for badge card margin
   },
   badgeCard: {
-    width: 80,
-    height: 100,
+    width: 84, // Slightly wider
+    height: 110, // Slightly taller
     backgroundColor: "#f8fafc",
     borderRadius: 12,
     alignItems: "center",
@@ -1086,22 +1329,28 @@ const styles = StyleSheet.create({
     padding: 8,
     borderWidth: 1,
     borderColor: "#e2e8f0",
+    zIndex: 1,
+    shadowColor: "#000", // Add subtle shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
   },
   badgeCardEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
+    fontSize: 36, // Larger emoji
+    marginBottom: 10,
   },
   badgeCardName: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#475569",
+    color: "#334155", // Darker for better readability
     textAlign: "center",
   },
   noBadgesContainer: {
     marginTop: 20,
-    padding: 24,
+    padding: 30,
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -1110,10 +1359,34 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  trophyIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#f8fafc",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
   noBadgesText: {
-    marginTop: 12,
     fontSize: 16,
     fontWeight: "500",
     color: "#94a3b8",
+    textAlign: "center",
+  },
+  // Reset button styles
+  resetButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ef4444",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  resetButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#fff",
+    marginLeft: 4,
   },
 });

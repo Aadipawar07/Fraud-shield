@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { useLocalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mock data for a quiz
 const mockQuizData = {
@@ -58,12 +59,34 @@ export default function QuestScreen() {
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [previousPoints, setPreviousPoints] = useState(0);
+  const [newTotalPoints, setNewTotalPoints] = useState(0);
   
   // Get the quiz data for the current level
   const quizData = id ? mockQuizData[id.toString() as keyof typeof mockQuizData] : null;
   
   // Current question
   const currentQuestion = quizData && quizData.questions[currentQuestionIndex];
+  
+  // Get previous points when quiz is completed
+  useEffect(() => {
+    const getPreviousPoints = async () => {
+      if (quizCompleted) {
+        try {
+          const userProgressData = await AsyncStorage.getItem('USER_PROGRESS');
+          if (userProgressData) {
+            const parsedData = JSON.parse(userProgressData);
+            setPreviousPoints(parsedData.totalPoints || 0);
+            setNewTotalPoints((parsedData.totalPoints || 0) + (quizData?.points || 0));
+          }
+        } catch (error) {
+          console.error("Error getting previous points:", error);
+        }
+      }
+    };
+    
+    getPreviousPoints();
+  }, [quizCompleted, quizData?.points]);
   
   // Handle selecting an answer
   const handleSelectAnswer = (index: number) => {
@@ -91,14 +114,62 @@ export default function QuestScreen() {
       setSelectedAnswer(null);
       setIsAnswerSubmitted(false);
     } else {
-      // Quiz completed - this would trigger an update to the learning tab in a real app
-      // In a real app, we would send this completion info to the parent component
+      // Quiz completed - now let's update the progress
       setQuizCompleted(true);
       
-      // We would add something like this in a real implementation:
-      // if (route.params?.onComplete) {
-      //   route.params.onComplete(id, score);
-      // }
+      // Store the completion in AsyncStorage
+      if (id) {
+        try {
+          // Update local state to show completion UI
+          const levelCompleted = id.toString();
+          
+          // Save to AsyncStorage for persistence
+          // This simulates calling the parent component's completeLevel function
+          saveQuizCompletion(levelCompleted, score);
+        } catch (error) {
+          console.error("Error saving quiz completion:", error);
+        }
+      }
+    }
+  };
+  
+  // Function to save quiz completion data to AsyncStorage
+  const saveQuizCompletion = async (levelId: string, finalScore: number) => {
+    try {
+      // In a real app with proper state management, we would dispatch an action
+      // or call a function in the parent component.
+      // For now, we'll use AsyncStorage to persist the data
+      const completionData = {
+        levelId,
+        score: finalScore,
+        timestamp: new Date().toISOString(),
+        completed: true
+      };
+      
+      // Save quiz completion to AsyncStorage so learning tab can access it
+      await AsyncStorage.setItem('QUIZ_COMPLETION', JSON.stringify(completionData));
+      
+      // Get the existing total points if any
+      let existingPoints = 0;
+      const userProgress = await AsyncStorage.getItem('USER_PROGRESS');
+      if (userProgress) {
+        const parsedProgress = JSON.parse(userProgress);
+        existingPoints = parsedProgress.totalPoints || 0;
+      }
+      
+      // Calculate new total points - quiz score + level reward points
+      const earnedPoints = quizData?.points || 0;
+      const newTotalPoints = existingPoints + earnedPoints;
+      
+      await AsyncStorage.setItem('LEVEL_POINTS', JSON.stringify({
+        levelId,
+        points: earnedPoints,
+        totalPoints: newTotalPoints,
+        previousPoints: existingPoints
+      }));
+      console.log("Quiz completed and saved:", completionData);
+    } catch (error) {
+      console.error("Error saving completion data:", error);
     }
   };
   
@@ -239,9 +310,15 @@ export default function QuestScreen() {
             <View style={styles.resultSummary}>
               <Text style={styles.resultTitle}>Points Added</Text>
               <View style={styles.pointsUpdate}>
-                <Text style={styles.pointsOld}>0</Text>
+                <Text style={styles.pointsOld}>
+                  {/* Will be replaced with actual previous points from AsyncStorage in useEffect */}
+                  {previousPoints}
+                </Text>
                 <MaterialIcons name="arrow-forward" size={20} color="#64748b" style={{marginHorizontal: 8}} />
-                <Text style={styles.pointsNew}>{quizData.points}</Text>
+                <Text style={styles.pointsNew}>
+                  {/* Will be replaced with actual new total in useEffect */}
+                  {previousPoints + (quizData?.points || 0)}
+                </Text>
               </View>
               <Text style={styles.resultText}>
                 You've unlocked the next level! Continue your journey to become an expert in fraud protection.
@@ -250,9 +327,15 @@ export default function QuestScreen() {
             
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={() => router.navigate("/(tabs)/learning")}
+              onPress={() => {
+                // Make sure the ScamQuest tab is active when returning
+                router.navigate({
+                  pathname: "/(tabs)/learning",
+                  params: { activeTab: "scamquest" }
+                });
+              }}
             >
-              <Text style={styles.actionButtonText}>Back to Learning Center</Text>
+              <Text style={styles.actionButtonText}>Back to Scam Quest</Text>
             </TouchableOpacity>
           </View>
         )}
