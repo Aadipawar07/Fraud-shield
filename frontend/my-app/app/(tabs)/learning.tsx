@@ -22,38 +22,9 @@ import { BorderRadius, Shadow } from "../../constants/Shape";
 import { useTheme } from "../../context/ThemeContext";
 import { useThemeColor } from "../../hooks/useThemeColor";
 
-// Helper function to get the right image based on article ID
-const getArticleImage = (id: string) => {
-  // Map article IDs to their corresponding image files
-  switch(id) {
-    case 'a1':
-      return require('../../assets/images/articles/article-1.png');
-    case 'a2':
-      return require('../../assets/images/articles/article-2.png');
-    case 'a3':
-      return require('../../assets/images/articles/article-3.png');
-    case 'a4':
-      return require('../../assets/images/articles/article-4.png');
-    case 'a5':
-      return require('../../assets/images/articles/article-5.png');
-    default:
-      // Default image if no match
-      return require('../../assets/images/articles/article-1.png');
-  }
-};
+
 
 // Types for learning content
-interface Article {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  type: "free" | "paid";
-  provider: string;
-  readTime: string;
-  imageUrl: string;
-  link: string;
-}
 
 interface Course {
   id: string;
@@ -89,10 +60,9 @@ interface UserProgress {
 export default function LearningScreen() {
   const insets = useSafeAreaInsets();
   const { activeTab: initialTab } = useLocalSearchParams<{ activeTab?: string }>();
-  const [activeTab, setActiveTab] = useState<"articles" | "courses" | "scamquest" | "resources">(
-    initialTab === "scamquest" ? "scamquest" : (initialTab === "resources" ? "resources" : "articles")
+  const [activeTab, setActiveTab] = useState<"courses" | "scamquest" | "resources">(
+    initialTab === "scamquest" ? "scamquest" : (initialTab === "resources" ? "resources" : "courses")
   );
-  const [articles, setArticles] = useState<Article[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [scamLevels, setScamLevels] = useState<ScamLevel[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -128,7 +98,6 @@ export default function LearningScreen() {
 
   useEffect(() => {
     const content = getLearningContent();
-    setArticles(content.articles);
     setCourses(content.courses);
     
     // Load user progress from AsyncStorage
@@ -326,7 +295,6 @@ export default function LearningScreen() {
   };
 
   // Use all content directly since we removed the category filters
-  const filteredArticles = articles;
   const filteredCourses = courses;
   const filteredScamLevels = scamLevels;
   
@@ -372,37 +340,7 @@ export default function LearningScreen() {
     checkQuizCompletion();
   }, [activeTab]);
 
-  // Render an article card
-  const renderArticleCard = ({ item }: { item: Article }) => (
-    <TouchableOpacity
-      style={styles.contentCard}
-      onPress={() => {
-        // Using the proper format for dynamic routes in Expo Router
-        router.navigate(`/learning/article/${item.id}`);
-      }}
-    >
-      <View style={styles.cardHeader}>
-        <Image 
-          source={getArticleImage(item.id)}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
-        <View style={styles.cardBadge}>
-          <ThemedText style={styles.cardBadgeText}>{item.type}</ThemedText>
-        </View>
-      </View>
-      <View style={styles.cardBody}>
-        <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
-        <ThemedText style={styles.cardDescription} numberOfLines={2}>
-          {item.description}
-        </ThemedText>
-        <View style={styles.cardMeta}>
-          <ThemedText style={styles.cardProvider}>{item.provider}</ThemedText>
-          <ThemedText style={styles.cardReadTime}>• {item.readTime} read</ThemedText>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+
 
   // Define the Educational Resource type
   interface EducationalResource {
@@ -413,6 +351,26 @@ export default function LearningScreen() {
     content: string;
     imageUrl: string;
   }
+
+  // Helper function to get resource image based on ID
+  const getResourceImage = (id: string) => {
+    // Map resource IDs to corresponding image files
+    switch(id) {
+      case 'article1':
+        return require('../../assets/images/articles/article-1.png');
+      case 'article2':
+        return require('../../assets/images/articles/article-2.png');
+      case 'article3':
+        return require('../../assets/images/articles/article-3.png');
+      case 'article4':
+        return require('../../assets/images/articles/article-4.png');
+      case 'article5':
+        return require('../../assets/images/articles/article-5.png');
+      default:
+        // Default image if no match is found
+        return require('../../assets/images/articles/article-1.png');
+    }
+  };
 
   // Render an educational resource card
   const renderResourceCard = ({ item }: { item: EducationalResource }) => (
@@ -425,7 +383,7 @@ export default function LearningScreen() {
     >
       <View style={styles.cardHeader}>
         <Image 
-          source={{ uri: item.imageUrl }}
+          source={getResourceImage(item.id)}
           style={styles.cardImage}
           resizeMode="cover"
           defaultSource={require('../../assets/images/articles/article-1.png')}
@@ -448,6 +406,26 @@ export default function LearningScreen() {
   );
 
   // Render a course card
+  // Helper function to get course image based on ID
+  const getCourseImage = (id: string) => {
+    // Map course IDs to corresponding image files
+    switch(id) {
+      case 'c1':
+        return require('../../assets/images/articles/article-1.png');
+      case 'c2':
+        return require('../../assets/images/articles/article-2.png');
+      case 'c3':
+        return require('../../assets/images/articles/article-3.png');
+      case 'c4':
+        return require('../../assets/images/articles/article-4.png');
+      case 'c5':
+        return require('../../assets/images/articles/article-5.png');
+      default:
+        // Default image if no match is found
+        return require('../../assets/images/articles/article-1.png');
+    }
+  };
+
   const renderCourseCard = ({ item }: { item: Course }) => (
     <TouchableOpacity
       style={styles.contentCard}
@@ -457,10 +435,12 @@ export default function LearningScreen() {
       }}
     >
       <View style={styles.cardHeader}>
-        {/* Since we don't have course images yet, use a placeholder */}
-        <View style={[styles.cardImage, styles.placeholderImage]}>
-          <MaterialIcons name="school" size={30} color="#a1a1aa" />
-        </View>
+        <Image 
+          source={getCourseImage(item.id)}
+          style={styles.cardImage}
+          resizeMode="cover"
+          defaultSource={require('../../assets/images/articles/article-1.png')}
+        />
         <View 
           style={[
             styles.cardBadge, 
@@ -649,9 +629,8 @@ export default function LearningScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor }]}>
-      <ThemedView style={styles.header}>
+      <ThemedView style={styles.centerTitleContainer}>
         <ThemedText variant="h2" style={styles.headerTitle}>Learning Center</ThemedText>
-        {renderLanguageSwitcher()}
       </ThemedView>
 
       {/* Shared Progress Bar */}
@@ -672,19 +651,6 @@ export default function LearningScreen() {
 
       {/* Content Tabs */}
       <ThemedView style={styles.tabsContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "articles" && styles.activeTab]}
-          onPress={() => setActiveTab("articles")}
-        >
-          <View style={styles.tabInner}>
-            <ThemedText 
-              variant="button" 
-              style={[styles.tabText, activeTab === "articles" && { color: primaryColor }]}
-            >
-              Articles
-            </ThemedText>
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, activeTab === "courses" && styles.activeTab]}
           onPress={() => setActiveTab("courses")}
@@ -735,32 +701,7 @@ export default function LearningScreen() {
       </ThemedView>
 
       {/* Content List */}
-      {activeTab === "articles" ? (
-        <FlatList
-          data={filteredArticles}
-          renderItem={renderArticleCard}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (
-            <TouchableOpacity
-              style={styles.miniQuizCard}
-              onPress={() => setActiveTab("scamquest")}
-            >
-              <View style={styles.miniQuizIcon}>
-                <MaterialIcons name="quiz" size={24} color="#fff" />
-              </View>
-              <View style={styles.miniQuizContent}>
-                <ThemedText style={styles.miniQuizTitle}>Test your knowledge!</ThemedText>
-                <ThemedText style={styles.miniQuizDescription}>
-                  Take a quick quiz based on what you've learned
-                </ThemedText>
-              </View>
-              <MaterialIcons name="chevron-right" size={24} color="#4f46e5" />
-            </TouchableOpacity>
-          )}
-        />
-      ) : activeTab === "courses" ? (
+      {activeTab === "courses" ? (
         <FlatList
           data={filteredCourses}
           renderItem={renderCourseCard}
@@ -888,6 +829,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     color: "#111827",
+    textAlign: "center",
+  },
+  centerTitleContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
   },
   // Language switcher styles
   languageSwitcher: {

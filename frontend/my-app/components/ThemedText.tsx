@@ -1,7 +1,8 @@
-import { Text, type TextProps } from "react-native";
+import React, { useContext } from "react";
+import { Text, type TextProps, Animated } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { getTypography } from "@/constants/Typography";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useTheme } from "@/context/ThemeContext";
 
 export type ThemedTextVariant = 
   | "display"
@@ -31,6 +32,7 @@ export type ThemedTextProps = TextProps & {
   variant?: ThemedTextVariant;
   weight?: ThemedTextWeight;
   secondary?: boolean;
+  animated?: boolean;
 };
 
 export function ThemedText({
@@ -40,9 +42,11 @@ export function ThemedText({
   variant = "bodyMedium",
   weight,
   secondary = false,
+  animated = false,
   ...rest
 }: ThemedTextProps) {
-  const colorScheme = useColorScheme() || 'light';
+  const { colorScheme } = useTheme();
+  
   const color = useThemeColor(
     { light: lightColor, dark: darkColor }, 
     secondary ? "textSecondary" : "text"
@@ -65,6 +69,11 @@ export function ThemedText({
     // Apply custom styles
     style,
   ];
+
+  // If animated, use Animated.Text for smoother transitions
+  if (animated) {
+    return <Animated.Text style={textStyle} {...rest} />;
+  }
 
   return <Text style={textStyle} {...rest} />;
 }

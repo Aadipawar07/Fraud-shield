@@ -253,13 +253,14 @@ export default function MonitorScreen() {
       : 0;
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor }]}
-      contentContainerStyle={{ paddingBottom: Math.max(Spacing.xl, insets.bottom) }}
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-      }
-    >
+    <ThemedView style={{ flex: 1 }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: Math.max(Spacing.xl, insets.bottom) }}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+      >
       <View style={styles.contentWrapper}>
         {/* Header */}
         <ThemedView style={styles.header}>
@@ -268,7 +269,7 @@ export default function MonitorScreen() {
         </ThemedView>
 
         {/* Monitoring Status Card */}
-        <Card style={styles.card}>
+        <ThemedView card style={styles.card} lightColor="#ffffff" darkColor="#1c1c1c" shadow="md">
           <View style={styles.cardHeaderRow}>
             <ThemedText variant="h3" style={styles.cardTitle}>Real-time Monitoring</ThemedText>
             <View
@@ -302,7 +303,7 @@ export default function MonitorScreen() {
           />
 
           {Platform.OS !== "android" && (
-            <ThemedView style={styles.infoBannerWarning}>
+            <ThemedView style={styles.infoBannerWarning} lightColor="#fffbeb" darkColor="#332200">
               <ThemedText style={styles.infoBannerWarningText}>
                 ⚠️ SMS monitoring is only available on Android
               </ThemedText>
@@ -310,7 +311,7 @@ export default function MonitorScreen() {
           )}
 
           {Platform.OS === "android" && !monitorState.permissionsGranted && (
-            <ThemedView style={styles.infoBannerError}>
+            <ThemedView style={styles.infoBannerError} lightColor="#fef2f2" darkColor="#330000">
               <ThemedText style={styles.infoBannerErrorText}>
                 ❌ SMS permissions required for monitoring
               </ThemedText>
@@ -341,13 +342,13 @@ export default function MonitorScreen() {
               />
             </TouchableOpacity>
           </View>
-        </Card>
+        </ThemedView>
 
         {/* Stats */}
-        <Card style={styles.card}>
+        <ThemedView card style={styles.card} lightColor="#ffffff" darkColor="#1c1c1c" shadow="md">
           <ThemedText variant="h3" style={styles.cardTitle}>Monitoring Statistics</ThemedText>
           <View style={styles.statsRow}>
-            <View style={styles.statItem}>
+            <ThemedView style={styles.statItem}>
               <ThemedText variant="h3" style={[styles.statNumber, { color: successColor }]}>
                 {Math.max(
                   0,
@@ -355,89 +356,87 @@ export default function MonitorScreen() {
                 )}
               </ThemedText>
               <ThemedText variant="caption" style={styles.statLabel}>Safe Messages</ThemedText>
-            </View>
-            <View style={styles.statItem}>
+            </ThemedView>
+            <ThemedView style={styles.statItem}>
               <ThemedText variant="h3" style={[styles.statNumber, { color: dangerColor }]}>
                 {monitorState.fraudCount}
               </ThemedText>
               <ThemedText variant="caption" style={styles.statLabel}>Fraud Detected</ThemedText>
-            </View>
-            <View style={styles.statItem}>
+            </ThemedView>
+            <ThemedView style={styles.statItem}>
               <ThemedText variant="h3" style={[styles.statNumber, { color: primaryColor }]}>
                 {monitorState.processedCount}
               </ThemedText>
               <ThemedText variant="caption" style={styles.statLabel}>Total Scanned</ThemedText>
-            </View>
-            <View style={styles.statItem}>
+            </ThemedView>
+            <ThemedView style={styles.statItem}>
               <ThemedText variant="h3" style={[styles.statNumber, { color: warningColor }]}>
                 {fraudRate}%
               </ThemedText>
               <ThemedText variant="caption" style={styles.statLabel}>Fraud Rate</ThemedText>
-            </View>
+            </ThemedView>
           </View>
-        </Card>
+        </ThemedView>
 
         {/* Filters & Search */}
         <View style={styles.filterRow}>
           <TouchableOpacity
             onPress={() => setSelectedFilter("all")}
-            style={[
-              styles.filterChip,
-              selectedFilter === "all" && styles.filterChipActive,
-            ]}
           >
-            <ThemedText
-              variant="label"
-              style={[
-                styles.filterChipText,
-                selectedFilter === "all" && styles.filterChipTextActive,
-              ]}
+            <ThemedView 
+              lightColor={selectedFilter === "all" ? "#e0e7ff" : "#e5e7eb"} 
+              darkColor={selectedFilter === "all" ? "#3730a3" : "#333333"} 
+              style={styles.filterChip}
             >
-              All
-            </ThemedText>
+              <ThemedText
+                variant="label"
+                style={styles.filterChipText}
+              >
+                All
+              </ThemedText>
+            </ThemedView>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSelectedFilter("fraud")}
-            style={[
-              styles.filterChip,
-              selectedFilter === "fraud" && styles.filterChipActive,
-            ]}
           >
-            <ThemedText
-              variant="label"
-              style={[
-                styles.filterChipText,
-                selectedFilter === "fraud" && styles.filterChipTextActive,
-              ]}
+            <ThemedView 
+              lightColor={selectedFilter === "fraud" ? "#e0e7ff" : "#e5e7eb"} 
+              darkColor={selectedFilter === "fraud" ? "#3730a3" : "#333333"}
+              style={styles.filterChip}
             >
-              Fraud
-            </ThemedText>
+              <ThemedText
+                variant="label"
+                style={styles.filterChipText}
+              >
+                Fraud
+              </ThemedText>
+            </ThemedView>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSelectedFilter("safe")}
-            style={[
-              styles.filterChip,
-              selectedFilter === "safe" && styles.filterChipActive,
-            ]}
           >
-            <ThemedText
-              variant="label"
-              style={[
-                styles.filterChipText,
-                selectedFilter === "safe" && styles.filterChipTextActive,
-              ]}
+            <ThemedView 
+              lightColor={selectedFilter === "safe" ? "#e0e7ff" : "#e5e7eb"} 
+              darkColor={selectedFilter === "safe" ? "#3730a3" : "#333333"}
+              style={styles.filterChip}
             >
-              Safe
-            </ThemedText>
+              <ThemedText
+                variant="label"
+                style={styles.filterChipText}
+              >
+                Safe
+              </ThemedText>
+            </ThemedView>
           </TouchableOpacity>
         </View>
 
-        <Input
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search by sender or message..."
-          containerStyle={styles.searchInput}
-        />
+        <ThemedView lightColor="#ffffff" darkColor="#333333" style={styles.searchInputContainer}>
+          <Input
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search by sender or message..."
+          />
+        </ThemedView>
 
         {/* Actions */}
         <View style={styles.actionsRow}>
@@ -492,7 +491,7 @@ export default function MonitorScreen() {
           filteredMessages.map((sms) => {
             const isExpanded = expandedIds.has(sms.id);
             return (
-              <Card key={sms.id} style={styles.messageCard}>
+              <ThemedView key={sms.id} style={styles.messageCard} lightColor="#ffffff" darkColor="#1c1c1c" shadow="sm">
                 <View style={styles.messageHeaderRow}>
                   <ThemedText
                     variant="label"
@@ -520,7 +519,7 @@ export default function MonitorScreen() {
                 </ThemedText>
 
                 {sms.isFraud && sms.fraudReason && (
-                  <View style={styles.reasonBox}>
+                  <ThemedView style={styles.reasonBox} lightColor="#fef2f2" darkColor="#330000">
                     <ThemedText variant="bodySmall" style={styles.reasonText}>
                       Reason: {sms.fraudReason}
                     </ThemedText>
@@ -529,7 +528,7 @@ export default function MonitorScreen() {
                         Confidence: {formatConfidencePercentage(sms.confidence)}
                       </ThemedText>
                     )}
-                  </View>
+                  </ThemedView>
                 )}
 
                 <View style={styles.cardActionsRow}>
@@ -548,11 +547,11 @@ export default function MonitorScreen() {
                     <ThemedText variant="button" style={styles.cardActionText}>Share</ThemedText>
                   </TouchableOpacity>
                 </View>
-              </Card>
+              </ThemedView>
             );
           })
         ) : (
-          <Card style={styles.emptyStateCard}>
+          <ThemedView card style={styles.emptyStateCard} lightColor="#f9fafb" darkColor="#222222">
             <ThemedText variant="bodyLarge" weight="semibold" style={styles.emptyStateTitle}>
               📱 No SMS messages scanned yet
             </ThemedText>
@@ -561,17 +560,17 @@ export default function MonitorScreen() {
                 ? "Start monitoring to see real-time fraud detection"
                 : "SMS monitoring is only available on Android"}
             </ThemedText>
-          </Card>
+          </ThemedView>
         )}
       </View>
     </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
   },
   contentWrapper: {
     padding: 24,
@@ -585,22 +584,15 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#111827",
     marginBottom: 0,
   },
   headerIcon: {
     marginLeft: 8,
   },
   card: {
-    backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
   },
   cardHeaderRow: {
     flexDirection: "row",
@@ -638,22 +630,18 @@ const styles = StyleSheet.create({
   startText: { color: "#166534" },
   stopText: { color: "#991b1b" },
   infoBannerWarning: {
-    backgroundColor: "#fffbeb",
     borderRadius: 8,
     padding: 8,
   },
   infoBannerWarningText: {
-    color: "#92400e",
     fontSize: 12,
     textAlign: "center",
   },
   infoBannerError: {
-    backgroundColor: "#fef2f2",
     borderRadius: 8,
     padding: 8,
   },
   infoBannerErrorText: {
-    color: "#991b1b",
     fontSize: 12,
     textAlign: "center",
   },
@@ -661,10 +649,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 8,
+    flexWrap: "wrap",
   },
-  statItem: { alignItems: "center", minWidth: 70 },
-  statNumber: { fontSize: 20, fontWeight: "bold" },
-  statLabel: { fontSize: 12, color: "#6b7280" },
+  statItem: { 
+    alignItems: "center", 
+    minWidth: 70,
+    paddingHorizontal: 5, 
+    marginVertical: 5,
+    width: '23%',
+  },
+  statNumber: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  statLabel: { 
+    fontSize: 11, 
+    textAlign: "center",
+  },
   filterRow: {
     flexDirection: "row",
     gap: 8,
@@ -674,22 +677,23 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#e5e7eb",
     borderRadius: 999,
   },
   filterChipActive: { backgroundColor: "#e0e7ff" },
-  filterChipText: { color: "#374151", fontWeight: "600", fontSize: 12 },
+  filterChipText: { fontWeight: "600", fontSize: 12 },
   filterChipTextActive: { color: "#3730a3" },
   searchInput: {
-    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 12,
     fontSize: 14,
-    color: "#111827",
+  },
+  searchInputContainer: {
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   actionsRow: { flexDirection: "row", gap: 12, marginBottom: 8 },
   secondaryAction: {
@@ -708,15 +712,9 @@ const styles = StyleSheet.create({
   },
   subtleText: { fontSize: 12, color: "#6b7280" },
   messageCard: {
-    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 12,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
   },
   messageHeaderRow: {
     flexDirection: "row",
@@ -728,9 +726,9 @@ const styles = StyleSheet.create({
   timestampText: { fontSize: 11, color: "#6b7280" },
   senderText: { fontSize: 13, color: "#4b5563", marginBottom: 4 },
   messageText: { fontSize: 14, color: "#111827", marginBottom: 6 },
-  reasonBox: { backgroundColor: "#fef2f2", padding: 8, borderRadius: 8 },
-  reasonText: { color: "#991b1b", fontSize: 12 },
-  confidenceText: { color: "#b91c1c", fontSize: 12, marginTop: 2 },
+  reasonBox: { padding: 8, borderRadius: 8 },
+  reasonText: { fontSize: 12 },
+  confidenceText: { fontSize: 12, marginTop: 2 },
   cardActionsRow: {
     flexDirection: "row",
     justifyContent: "flex-end",
@@ -740,14 +738,12 @@ const styles = StyleSheet.create({
   cardActionBtn: { paddingVertical: 6, paddingHorizontal: 8 },
   cardActionText: { color: "#2563eb", fontWeight: "600", fontSize: 12 },
   emptyStateCard: {
-    backgroundColor: "#f9fafb",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
   },
-  emptyStateTitle: { color: "#6b7280", textAlign: "center" },
+  emptyStateTitle: { textAlign: "center" },
   emptyStateSubtitle: {
-    color: "#9ca3af",
     textAlign: "center",
     fontSize: 12,
     marginTop: 6,

@@ -208,6 +208,9 @@ export interface FraudNumber {
  * Search for a registered intermediary by name or registration number
  */
 export function searchRegisteredIntermediary(searchTerm: string): RegisteredIntermediary | null {
+  console.log("Function called: searchRegisteredIntermediary with term:", searchTerm);
+  console.log("Available intermediaries:", registeredIntermediaries);
+  
   if (!searchTerm.trim()) return null;
   
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -226,6 +229,9 @@ export function searchRegisteredIntermediary(searchTerm: string): RegisteredInte
  * Search for a debarred entity by name
  */
 export function searchDebarredEntity(searchTerm: string): DebarredEntity | null {
+  console.log("Function called: searchDebarredEntity with term:", searchTerm);
+  console.log("Available debarred entities:", debarredEntities);
+  
   if (!searchTerm.trim()) return null;
   
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -242,7 +248,10 @@ export function searchDebarredEntity(searchTerm: string): DebarredEntity | null 
  * Get circulars with optional filtering
  */
 export function getCirculars(category?: string, year?: number): Circular[] {
-  let filteredCirculars = [...circulars] as Circular[];
+  console.log("Function called: getCirculars with category:", category, "and year:", year);
+  console.log("Available circulars:", circulars);
+  
+  let filteredCirculars = [...circulars];
   
   if (category) {
     filteredCirculars = filteredCirculars.filter(
@@ -257,42 +266,70 @@ export function getCirculars(category?: string, year?: number): Circular[] {
   }
   
   // Sort by date (newest first)
-  return filteredCirculars.sort(
+  const sortedResults = filteredCirculars.sort(
     (a: Circular, b: Circular) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+  
+  console.log(`Filtered circulars by category "${category}" and year ${year}, found:`, sortedResults);
+  return sortedResults;
 }
 
 /**
  * Get unique circular categories
  */
 export function getCircularCategories(): string[] {
+  console.log("Function called: getCircularCategories");
+  
   const categories = new Set<string>();
   circulars.forEach((item: Circular) => categories.add(item.category));
-  return Array.from(categories);
+  const categoryArray = Array.from(categories);
+  
+  console.log("Available categories:", categoryArray);
+  return categoryArray;
 }
 
 /**
  * Get unique circular years
  */
 export function getCircularYears(): number[] {
+  console.log("Function called: getCircularYears");
+  
   const years = new Set<number>();
   circulars.forEach((item: Circular) => years.add(new Date(item.date).getFullYear()));
-  return Array.from(years).sort((a, b) => b - a); // Sort descending
+  const yearArray = Array.from(years).sort((a, b) => b - a); // Sort descending
+  
+  console.log("Available years:", yearArray);
+  return yearArray;
 }
 
 /**
  * Search for a phone number in fraud database
  */
 export function searchPhoneNumber(phoneNumber: string): FraudNumber | null {
+  console.log("Function called: searchPhoneNumber with number:", phoneNumber);
+  console.log("Available fraud numbers:", fraudNumbers);
+  
   if (!phoneNumber.trim()) return null;
   
   // Normalize the phone number (remove non-digit characters except +)
   const normalizedNumber = phoneNumber.replace(/[^\d+]/g, "");
   
-  const result = fraudNumbers.find(
-    (item: FraudNumber) => item.number === normalizedNumber
+  // Try multiple formats for better matching
+  const possibleFormats = [
+    normalizedNumber,
+    normalizedNumber.startsWith('+') ? normalizedNumber : `+${normalizedNumber}`,
+    normalizedNumber.startsWith('+') ? normalizedNumber.substring(1) : normalizedNumber
+  ];
+  
+  // Try to match any of the possible formats
+  const result = fraudNumbers.find(item => 
+    possibleFormats.some(format => {
+      const match = item.number === format;
+      if (match) console.log(`Found match with format: ${format}`);
+      return match;
+    })
   ) || null;
   
-  console.log(`Searched for phone number "${phoneNumber}" (normalized: "${normalizedNumber}"), found:`, result);
+  console.log(`Searched for phone number "${phoneNumber}" (normalized formats: ${possibleFormats.join(', ')}), found:`, result);
   return result;
 }

@@ -51,6 +51,7 @@ export default function TabLayout() {
         name="learning"
         options={{
           title: "Learning",
+          headerShown: false, // Hide the header for the learning tab
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
           ),
