@@ -9,7 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedCard } from '@/components/ThemedCard';
-import { ThemedButton } from '@/components/ThemedButton';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import { Spacing } from '@/constants/Spacing';

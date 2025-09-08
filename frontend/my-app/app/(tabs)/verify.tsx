@@ -399,7 +399,7 @@ export default function VerifyScreen() {
             <ThemedText style={[
               styles.tabText,
               activeTab === 'circular' && styles.activeTabText
-            ]}>SEBI Circulars</ThemedText>
+            ]}>Circular</ThemedText>
           </TouchableOpacity>
         </ThemedView>
         
@@ -812,13 +812,13 @@ export default function VerifyScreen() {
           <ThemedView style={styles.cardElevated}>
             <ThemedView style={styles.cardHeader}>
               <FontAwesome5 name="file-alt" size={20} color={primaryColor} />
-              <ThemedText style={styles.cardTitle}>SEBI Circulars & Notifications</ThemedText>
+              <ThemedText style={styles.cardTitle}>Circular</ThemedText>
             </ThemedView>
             
             <ThemedView style={styles.infoCard}>
               <MaterialIcons name="info-outline" size={18} color={primaryColor} />
               <ThemedText style={styles.infoText}>
-                Search for the latest circulars, notifications and guidelines issued by SEBI.
+                Search for the latest circulars, notifications and guidelines issued by government.
               </ThemedText>
             </ThemedView>
             

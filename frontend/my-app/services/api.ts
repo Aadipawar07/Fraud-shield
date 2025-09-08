@@ -4,13 +4,24 @@ import { Platform } from "react-native";
 
 const getApiBaseUrl = () => {
   // For Android Emulator, use 10.0.2.2 (special Android DNS)
-  if (Platform.OS === "android" && !__DEV__) {
+  if (Platform.OS === "android" && __DEV__) {
     return "http://10.0.2.2:3002";
   }
   
-  // For physical devices, use your computer's IP address
+  // For physical devices, try multiple possible IP ranges
   if (Platform.OS === "android" || Platform.OS === "ios") {
-    return "http://192.168.1.5:3002";  // Replace with your computer's IP
+    // Use 10.0.2.2 for Android emulator or localhost for iOS simulator
+    if (__DEV__) {
+      // For emulator/simulator development
+      if (Platform.OS === "android") {
+        return "http://10.0.2.2:3002"; // Special Android DNS for host loopback
+      } else {
+        return "http://localhost:3002"; // iOS simulator can access localhost
+      }
+    } else {
+      // For physical devices, return your actual server address
+      return "http://192.168.1.5:3002"; // Replace with your network IP
+    }
   }
 
   // For web or development
@@ -36,15 +47,23 @@ export async function checkMessageSafety(
     console.log(`Making API request to: ${API_URL}/detect`);
     console.log(`Message: ${message}`);
 
+    // Add timeout to fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
     const response = await fetch(`${API_URL}/detect`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ message }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
+      console.error(`API request failed with status ${response.status}`);
       throw new Error(`API request failed with status ${response.status}`);
     }
 
@@ -72,9 +91,26 @@ export async function checkMessageSafety(
     return result;
   } catch (error) {
     console.error("API error:", error);
+    
+    // Check for specific error types for better debugging
+    let errorMessage = "Failed to connect to fraud detection service. Please try again.";
+    
+    // Type-safe error handling
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        errorMessage = "Connection timed out. Server may be down or unreachable.";
+      } else if (error.message.includes('Network request failed')) {
+        errorMessage = "Network error: Check your network connection and server status.";
+      }
+    }
+    
+    // For development: show the API URL that failed in the console
+    console.log(`Failed API URL: ${API_URL}/detect`);
+    
     return {
       safe: false,
-      reason: "Failed to connect to fraud detection service. Please try again.",
+      reason: errorMessage,
+      method: "Error Handler"
     };
   }
 }

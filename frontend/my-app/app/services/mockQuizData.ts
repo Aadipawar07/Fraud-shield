@@ -1,5 +1,5 @@
 // Mock data for quizzes in the ScamQuest feature
-export const mockQuizData = {
+const mockQuizData = {
   l1: {
     title: "Fake Advisor Quiz",
     questions: [

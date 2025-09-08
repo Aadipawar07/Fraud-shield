@@ -794,10 +794,7 @@ export default function LearningScreen() {
               disabled={level.status === 'locked'}
               onPress={() => {
                 if (level.status !== 'locked') {
-                  router.push({
-                    pathname: '/learning/quest/[id]',
-                    params: { id: level.id }
-                  });
+                  router.navigate(`/learning/quest/${level.id}`);
                 }
               }}
             >

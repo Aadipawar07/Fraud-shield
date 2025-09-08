@@ -1,7 +1,18 @@
 import express from "express";
 import { OpenAI } from "openai";
 import dotenv from "dotenv";
+// Load environment variables from .env file
 dotenv.config();
+
+// Debug: Log environment variables (without showing the full API key)
+console.log("Environment variables loaded:");
+console.log(`- PORT: ${process.env.PORT || 3002}`);
+console.log(`- OPENAI_API_KEY set: ${process.env.OPENAI_API_KEY ? 'Yes (key found)' : 'No (missing)'}`);
+if (process.env.OPENAI_API_KEY) {
+  const apiKeyStart = process.env.OPENAI_API_KEY.substring(0, 7);
+  const apiKeyEnd = process.env.OPENAI_API_KEY.substring(process.env.OPENAI_API_KEY.length - 4);
+  console.log(`- API Key: ${apiKeyStart}...${apiKeyEnd}`);
+}
 
 const app = express();
 app.use(express.json());
@@ -23,7 +34,7 @@ app.get('/', (req, res) => {
 });
 
 // Define port for the server
-const PORT = 3002; // Using port 3002 since 3001 is already in use
+const PORT = process.env.PORT || 3002; // Using port from .env or 3002 as default
 
 // Check if OpenAI API key is configured
 if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY_HERE') {
