@@ -23,6 +23,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-task-manager",
       [
         "expo-splash-screen",
         {
@@ -33,6 +34,18 @@
         }
       ]
     ],
+    "backgroundColor": "#ffffff",
+    "notification": {
+      "icon": "./assets/images/notification-icon.png",
+      "color": "#ffffff",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Fraud Shield"
+    },
+    "infoPlist": {
+      "UIBackgroundModes": [
+        "fetch"
+      ]
+    },
     "experiments": {
       "typedRoutes": true
     }

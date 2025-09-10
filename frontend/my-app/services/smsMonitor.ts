@@ -1,9 +1,14 @@
-import { Platform, PermissionsAndroid } from "react-native";
+import { Platform, PermissionsAndroid, Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { checkMessageSafety } from "./api";
 import { analyzeMessage, getReadableAnalysis } from "../utils/smsAnalyzer";
 import Toast from "react-native-toast-message";
+import { 
+  registerBackgroundMonitoring, 
+  stopBackgroundMonitoring,
+  isBackgroundMonitoringActive 
+} from "./backgroundMonitoring";
 
 // Type definitions
 export interface SMSMessage {
@@ -80,18 +85,33 @@ class SMSMonitorService {
     }
 
     try {
+      console.log("Requesting SMS permissions...");
+      
+      // Check existing permissions first
+      const checkPermissions = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_SMS);
+      if (checkPermissions) {
+        console.log("Permissions already granted");
+        this.permissionsGranted = true;
+        this.state.permissionsGranted = true;
+        return true;
+      }
+      
+      // Request permissions if not already granted
       const permissions = [
         PermissionsAndroid.PERMISSIONS.READ_SMS,
         PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
         PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
       ];
 
+      console.log("Showing permission dialog...");
       const granted = await PermissionsAndroid.requestMultiple(permissions);
+      console.log("Permission results:", granted);
 
       const allGranted = Object.values(granted).every(
         (permission) => permission === PermissionsAndroid.RESULTS.GRANTED,
       );
-
+      
+      console.log("All permissions granted:", allGranted);
       this.permissionsGranted = allGranted;
       this.state.permissionsGranted = allGranted;
 
@@ -125,6 +145,7 @@ class SMSMonitorService {
     onNewSMS?: (sms: SMSMessage) => void,
   ): Promise<boolean> {
     if (!this.isInitialized) {
+      console.log("Initializing SMS Monitor Service...");
       await this.initializeService();
     }
 
@@ -134,10 +155,13 @@ class SMSMonitorService {
     }
 
     if (!this.permissionsGranted) {
+      console.log("Permissions not granted, requesting...");
       const granted = await this.requestPermissions();
       if (!granted) {
+        console.log("Permission request denied");
         return false;
       }
+      console.log("Permissions granted successfully");
     }
 
     if (this.isMonitoring) {
@@ -146,14 +170,34 @@ class SMSMonitorService {
     }
 
     try {
+      console.log("Setting up SMS listener...");
+      
       // Dynamic import to handle the native dependency
-      const SmsListener = require("react-native-android-sms-listener");
+      let SmsListener;
+      try {
+        SmsListener = require("react-native-android-sms-listener").default;
+        console.log("SmsListener module loaded");
+      } catch (error) {
+        console.error("Failed to load SMS Listener module:", error);
+        Alert.alert(
+          "Module Error",
+          "Failed to load SMS Listener module. Make sure the app is running in a development client, not Expo Go.",
+        );
+        return false;
+      }
 
       this.onNewSMSCallback = onNewSMS;
-
+      
+      console.log("Registering SMS listener callback...");
       this.smsListener = SmsListener.addListener((message: any) => {
+        console.log("SMS received in listener:", message);
         this.handleIncomingSMS(message);
       });
+      console.log("SMS listener registered successfully");
+
+      // Register background monitoring task to ensure it continues even when app is minimized
+      console.log("Registering background monitoring task...");
+      await registerBackgroundMonitoring();
 
       this.isMonitoring = true;
       this.state.isMonitoring = true;
@@ -177,7 +221,7 @@ class SMSMonitorService {
     }
   }
 
-  stopMonitoring(): void {
+  async stopMonitoring(): Promise<void> {
     if (!this.isMonitoring) {
       return;
     }
@@ -187,6 +231,9 @@ class SMSMonitorService {
         this.smsListener.remove();
         this.smsListener = null;
       }
+      
+      // Stop background monitoring task
+      await stopBackgroundMonitoring();
 
       this.isMonitoring = false;
       this.state.isMonitoring = false;
@@ -206,7 +253,21 @@ class SMSMonitorService {
 
   private async handleIncomingSMS(rawMessage: any): Promise<void> {
     try {
-      console.log("New SMS received:", rawMessage);
+      console.log("New SMS received - processing:", rawMessage);
+
+      // Validate incoming message format
+      if (!rawMessage) {
+        console.error("Received null or undefined message");
+        return;
+      }
+      
+      if (typeof rawMessage !== 'object') {
+        console.error("Invalid message format, expected object but got:", typeof rawMessage);
+        return;
+      }
+      
+      console.log("Message details - address:", rawMessage.originatingAddress || rawMessage.address || "Unknown");
+      console.log("Message details - body:", rawMessage.body || rawMessage.messageBody || "");
 
       const smsMessage: SMSMessage = {
         id: Date.now().toString(),

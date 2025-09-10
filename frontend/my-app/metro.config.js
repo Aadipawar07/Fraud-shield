@@ -18,4 +18,17 @@ config.transformer.minifierConfig = {
 // Make source maps more reliable
 config.transformer.sourceMap = true;
 
+// Add blacklist for problematic modules
+config.resolver.blockList = [
+  new RegExp('.*/__tests__/.*'),
+  new RegExp('.*/\\.git/.*'),
+];
+
+// Cache configuration
+config.cacheStores = [
+  new (require('metro-cache').FileStore)({
+    root: `${__dirname}/node_modules/.cache/metro`,
+  }),
+];
+
 module.exports = config;

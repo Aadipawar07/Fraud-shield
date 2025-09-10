@@ -1,0 +1,66 @@
+# Node modules folders
+node_modules/
+**/node_modules/
+
+# Build folders
+android/build/
+android/app/build/
+ios/build/
+build/
+dist/
+
+# Test files
+__tests__/
+**/__tests__/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+
+# Documentation and markdown files
+docs/
+*.md
+README.md
+
+# Git related files
+.git/
+.gitignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.iml
+
+# Logs and debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*.bak
+*.tmp
+*.temp
+
+# Large media files not needed for build
+assets/videos/
+assets/raw/
+
+# Development files
+*.dev.*
+
+# Backup files
+**/backup/
+**/*-backup*
+
+# Environment configuration that should be generated at build time
+.env.local
+.env.development

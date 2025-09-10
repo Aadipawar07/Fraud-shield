@@ -17,6 +17,7 @@ import smsMonitorService, {
   SMSMessage,
   SMSMonitorState,
 } from "../../services/smsMonitor";
+import { isBackgroundMonitoringActive } from "../../services/backgroundMonitoring";
 import {
   simulateIncomingSMS,
   testMessages,
@@ -31,6 +32,7 @@ import { Spacing } from "../../constants/Spacing";
 import { BorderRadius, Shadow } from "../../constants/Shape";
 import { useTheme } from "../../context/ThemeContext";
 import { useThemeColor } from "../../hooks/useThemeColor";
+import SmsMonitoringTester from "../../components/SmsMonitoringTester";
 
 export default function MonitorScreen() {
   const insets = useSafeAreaInsets();
@@ -66,6 +68,23 @@ export default function MonitorScreen() {
     try {
       const state = smsMonitorService.getMonitorState();
       setMonitorState(state);
+
+      // Check background monitoring status
+      const isBackgroundActive = await isBackgroundMonitoringActive();
+      console.log('Background monitoring active:', isBackgroundActive);
+      
+      // If monitoring state doesn't match background state, sync them
+      if (state.isMonitoring !== isBackgroundActive) {
+        if (state.isMonitoring) {
+          // This means our state thinks we're monitoring but background task isn't running
+          console.log('Syncing background monitoring to active state');
+          await smsMonitorService.startMonitoring();
+        } else {
+          // This means background task is running but our state thinks we're not monitoring
+          console.log('Syncing monitoring state with background task');
+          setMonitorState(prev => ({...prev, isMonitoring: true}));
+        }
+      }
 
       // Load recent fraud and safe messages
       const fraudMessages = await smsMonitorService.getFraudReports();
@@ -113,22 +132,56 @@ export default function MonitorScreen() {
 
     try {
       if (monitorState.isMonitoring) {
-        smsMonitorService.stopMonitoring();
+        // Stop monitoring
+        await smsMonitorService.stopMonitoring();
+        console.log("SMS monitoring stopped successfully");
       } else {
+        console.log("Starting SMS monitoring...");
+        
+        // First explicitly request permissions - show this to the user
+        const hasPermissions = await smsMonitorService.requestPermissions();
+        console.log("Permission request result:", hasPermissions);
+        
+        if (!hasPermissions) {
+          Alert.alert(
+            "Permission Required",
+            "SMS monitoring requires permission to read SMS messages. Please grant this permission to use this feature.",
+            [{ text: "OK" }],
+          );
+          setIsLoading(false);
+          return;
+        }
+        
+        // Request SMS permissions and start monitoring
+        console.log("Starting monitoring service...");
         const success = await smsMonitorService.startMonitoring((newSMS) => {
+          console.log("New SMS received in callback:", newSMS);
+          
           // Update recent messages when new SMS is processed
           setRecentMessages((prev) => [newSMS, ...prev.slice(0, 24)]);
+          
           // Update stats
           const newState = smsMonitorService.getMonitorState();
           setMonitorState(newState);
+          
+          // Show alert for fraud detection
+          if (newSMS.isFraud) {
+            Alert.alert(
+              "Fraud Detected!",
+              `A fraudulent message was detected from ${newSMS.sender}:\n\n${newSMS.message.substring(0, 100)}${newSMS.message.length > 100 ? '...' : ''}`,
+              [{ text: "View Details" }]
+            );
+          }
         });
 
         if (!success) {
           Alert.alert(
             "Failed to Start",
-            "SMS monitoring could not be started. Please check permissions.",
+            "SMS monitoring could not be started. Please check permissions and try again.",
             [{ text: "OK" }],
           );
+        } else {
+          console.log("SMS monitoring started successfully");
         }
       }
 
@@ -478,6 +531,9 @@ export default function MonitorScreen() {
           }}
           style={styles.secondaryAction}
         />
+        
+        {/* SMS Monitoring Tester Component */}
+        <SmsMonitoringTester />
 
         {/* Recent Scans */}
         <View style={styles.listHeaderRow}>
