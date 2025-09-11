@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, Switch } from 'react-native';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useColorScheme } from '../hooks/useColorScheme';
+import { useThemeColor } from '../hooks/useThemeColor';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Import components
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedCard } from '@/components/ThemedCard';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
-import { Spacing } from '@/constants/Spacing';
-import { Card, TouchableCard } from '@/components/Card';
+import { ThemedText } from '../components/ThemedText';
+import { ThemedView } from '../components/ThemedView';
+import { ThemedCard } from '../components/ThemedCard';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import { Spacing } from '../constants/Spacing';
+import { Card, TouchableCard } from '../components/Card';
 
 export default function DesignSystemScreen() {
   const colorScheme = useColorScheme() || 'light';

@@ -1,4 +1,4 @@
-package com.aadipawar.fraudshield
+package com.aadityapawar.fraudshield
 
 import android.app.Application
 import android.content.res.Configuration

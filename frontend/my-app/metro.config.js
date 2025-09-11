@@ -24,6 +24,12 @@ config.resolver.blockList = [
   new RegExp('.*/\\.git/.*'),
 ];
 
+// Add path aliases for @ imports
+const path = require('path');
+config.resolver.extraNodeModules = {
+  '@': path.resolve(__dirname),
+};
+
 // Cache configuration
 config.cacheStores = [
   new (require('metro-cache').FileStore)({

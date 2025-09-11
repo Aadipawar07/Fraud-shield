@@ -1,4 +1,4 @@
-package com.aadipawar.fraudshield
+package com.aadityapawar.fraudshield
 
 import android.os.Build
 import android.os.Bundle

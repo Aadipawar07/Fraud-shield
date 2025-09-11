@@ -2,16 +2,22 @@
   "name": "fraud-shield",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "frontend/my-app/expo-router/entry",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/index.js",
     "backend": "node backend/index.js",
-    "frontend": "cd frontend/my-app && npm start",
+    "frontend": "cd frontend/my-app && npx expo start --clear",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "expo": "cd frontend/my-app && npx expo start --clear",
+    "android": "cd frontend/my-app && npx expo run:android",
+    "ios": "cd frontend/my-app && npx expo run:ios",
+    "build:apk": "cd frontend/my-app && npm run prepare-sms-monitoring && npx eas build --platform android --profile preview",
+    "build:dev-apk": "cd frontend/my-app && npm run prepare-sms-monitoring && npx eas build --platform android --profile development",
+    "export": "cd frontend/my-app && npx expo export -p android",
+    "deploy": "cd frontend/my-app && eas deploy",
+    "export-deploy": "cd frontend/my-app && npx expo export -p android && eas deploy"
   },
   "repository": {
     "type": "git",
@@ -42,7 +48,9 @@
     "openai": "^5.15.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
-    "react-native-android-sms-listener": "^0.8.0"
+    "react-native-android-sms-listener": "^0.8.0",
+    "react-dom": "19.0.0",
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@react-native-community/cli": "^20.0.0",
