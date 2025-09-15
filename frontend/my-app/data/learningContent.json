@@ -89,6 +89,118 @@
       "readTime": "8 min",
       "imageUrl": "",
       "link": "/learning/article/a8"
+    },
+    {
+      "id": "a9",
+      "title": "UPI Safety: 10 Golden Rules Every Student Must Know",
+      "description": "UPI is super convenient, but many students fall for scam requests. Learn how to recognize fake payment links, never share your PIN/OTP, and report fraud instantly.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "NPCI",
+      "readTime": "6 min",
+      "imageUrl": "",
+      "link": "/learning/article/a9",
+      "featured": true
+    },
+    {
+      "id": "a10",
+      "title": "Loan Traps: How to Spot Fake Lending Apps Before It's Too Late",
+      "description": "Many unverified apps lure students with \"instant loans.\" This article explains RBI-approved lenders, how to verify them, and what to do if you're stuck in debt traps.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "8 min",
+      "imageUrl": "",
+      "link": "/learning/article/a10",
+      "featured": true
+    },
+    {
+      "id": "a11",
+      "title": "Debit & Credit Cards: The Do's and Don'ts of Safe Banking",
+      "description": "Losing a card or sharing CVV carelessly can cost you. Here's a simple guide to secure PIN management, blocking cards, and RBI's zero-liability policy.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "7 min",
+      "imageUrl": "",
+      "link": "/learning/article/a11"
+    },
+    {
+      "id": "a12",
+      "title": "Digital Fraud 101: Common Tricks Scammers Use & How to Outsmart Them",
+      "description": "From KYC frauds to \"lottery winnings,\" scammers are creative. This article highlights real fraud cases reported in India and the red flags to look out for.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "9 min",
+      "imageUrl": "",
+      "link": "/learning/article/a12"
+    },
+    {
+      "id": "a13",
+      "title": "How to Check if a Financial Website/App is RBI-Approved",
+      "description": "Not every finance app is safe. Learn how to use RBI's official portal to verify NBFCs, banks, and payment providers before trusting them with your money.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "5 min",
+      "imageUrl": "",
+      "link": "/learning/article/a13"
+    },
+    {
+      "id": "a14",
+      "title": "Phishing Emails & Fake SMS: Don't Take the Bait",
+      "description": "Banks never ask for OTP via SMS or email. This piece explains how to identify phishing attempts, with screenshots of real scam examples.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "6 min",
+      "imageUrl": "",
+      "link": "/learning/article/a14"
+    },
+    {
+      "id": "a15",
+      "title": "Safe Investing: Avoid Ponzi Schemes & Double Money Scams",
+      "description": "Many \"get rich quick\" schemes target students. Understand how Ponzi schemes operate, warning signs, and how to cross-check with SEBI & RBI advisories.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "SEBI",
+      "readTime": "10 min",
+      "imageUrl": "",
+      "link": "/learning/article/a15"
+    },
+    {
+      "id": "a16",
+      "title": "Your Rights as a Banking Customer: What RBI Guarantees You",
+      "description": "Students often don't know they have rights—like quick grievance redressal, fraud liability cover, and secure digital payments. A clear breakdown of rights under RBI guidelines.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "8 min",
+      "imageUrl": "",
+      "link": "/learning/article/a16"
+    },
+    {
+      "id": "a17",
+      "title": "Cyber Hygiene Checklist for Students",
+      "description": "From using strong passwords to enabling 2FA, this checklist ensures students keep their digital footprint safe while banking or shopping online.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "NPCI",
+      "readTime": "7 min",
+      "imageUrl": "",
+      "link": "/learning/article/a17"
+    },
+    {
+      "id": "a18",
+      "title": "How to Report Fraud: Step-by-Step Guide for Students",
+      "description": "If you fall victim to fraud, time is critical. Learn how to contact your bank, use RBI's CMS portal, and file a cybercrime complaint within minutes.",
+      "category": "Student Safety",
+      "type": "free",
+      "provider": "RBI",
+      "readTime": "5 min",
+      "imageUrl": "",
+      "link": "/learning/article/a18"
     }
   ],
   "courses": [

@@ -1,0 +1,43 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient9" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="url(#bgGradient9)"/>
+  
+  <!-- Smartphone -->
+  <rect x="160" y="40" width="80" height="130" rx="12" fill="#1f2937"/>
+  <rect x="170" y="55" width="60" height="90" fill="#3b82f6"/>
+  <circle cx="200" cy="155" r="8" fill="#6b7280"/>
+  
+  <!-- UPI Logo -->
+  <circle cx="200" cy="100" r="25" fill="#ffffff"/>
+  <text x="200" y="108" text-anchor="middle" fill="#3b82f6" font-family="Arial" font-size="18" font-weight="bold">UPI</text>
+  
+  <!-- Security Elements -->
+  <rect x="100" y="70" width="15" height="20" fill="#10b981"/>
+  <path d="M102 70 Q102 65 107 65 Q112 65 112 70" stroke="#10b981" stroke-width="2" fill="none"/>
+  
+  <rect x="285" y="70" width="15" height="20" fill="#10b981"/>
+  <path d="M287 70 Q287 65 292 65 Q297 65 297 70" stroke="#10b981" stroke-width="2" fill="none"/>
+  
+  <!-- Warning Icons -->
+  <circle cx="80" cy="140" r="12" fill="#ef4444"/>
+  <text x="80" y="145" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">!</text>
+  
+  <circle cx="320" cy="140" r="12" fill="#ef4444"/>
+  <text x="320" y="145" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">!</text>
+  
+  <!-- Golden Rules Numbers -->
+  <circle cx="60" cy="180" r="15" fill="#fbbf24"/>
+  <text x="60" y="185" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">10</text>
+  
+  <!-- Title Area -->
+  <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+  <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">UPI Safety: 10 Golden Rules</text>
+  <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Every Student Must Know</text>
+</svg>

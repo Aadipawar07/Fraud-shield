@@ -143,3 +143,47 @@ export async function verifyPhoneNumber(
   }
   return response.json();
 }
+
+export async function analyzeImageWithChatGPT(imageUri: string): Promise<FraudCheckResponse> {
+  try {
+    console.log(`Making image analysis request to: ${API_URL}/analyze-image`);
+    
+    // Create FormData for image upload
+    const formData = new FormData();
+    formData.append('image', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'screenshot.jpg',
+    } as any);
+
+    const response = await fetch(`${API_URL}/analyze-image`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Analysis failed with status ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    // Convert the OpenAI response to our expected format
+    return {
+      safe: result.classification !== 'FRAUD',
+      reason: result.reason || result.analysis || 'Image analyzed successfully',
+      confidence: result.confidence_score || 0.5,
+      method: 'AI Image Analysis',
+      safetyScore: result.classification === 'FRAUD' ? 
+        Math.round((1 - (result.confidence_score || 0.5)) * 100) :
+        Math.round((result.confidence_score || 0.5) * 100),
+      analysis: result.detailed_analysis || result.reason || 'Chat screenshot has been analyzed for potential fraud indicators.',
+      phoneNumber: result.phone_number || undefined
+    };
+  } catch (error) {
+    console.error('Image analysis error:', error);
+    throw error;
+  }
+}

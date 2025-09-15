@@ -1,0 +1,50 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient15" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#feca57;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="url(#bgGradient15)"/>
+  
+  <!-- Pyramid Scheme Structure -->
+  <polygon points="200,60 160,100 240,100" fill="#ef4444" opacity="0.8"/>
+  <polygon points="200,75 175,100 225,100" fill="#fbbf24" opacity="0.8"/>
+  <polygon points="200,90 190,100 210,100" fill="#10b981" opacity="0.8"/>
+  
+  <!-- Money Symbols -->
+  <circle cx="200" cy="80" r="8" fill="#ffffff"/>
+  <text x="200" y="85" text-anchor="middle" fill="#ef4444" font-family="Arial" font-size="10" font-weight="bold">₹</text>
+  
+  <!-- Investors/People at bottom -->
+  <circle cx="140" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="160" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="180" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="200" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="220" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="240" cy="120" r="8" fill="#6b7280"/>
+  <circle cx="260" cy="120" r="8" fill="#6b7280"/>
+  
+  <!-- Warning Signs -->
+  <polygon points="80,80 100,80 90,100" fill="#fbbf24"/>
+  <text x="90" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
+  
+  <polygon points="300,80 320,80 310,100" fill="#fbbf24"/>
+  <text x="310" y="95" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
+  
+  <!-- SEBI Shield -->
+  <path d="M120 140 L150 140 Q160 140 160 150 L160 170 Q160 180 150 185 L135 195 L120 185 Q110 180 110 170 L110 150 Q110 140 120 140 Z" fill="#10b981"/>
+  <text x="135" y="170" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">SEBI</text>
+  
+  <!-- Broken Chain/Freedom -->
+  <ellipse cx="280" cy="150" rx="8" ry="12" fill="none" stroke="#374151" stroke-width="3"/>
+  <ellipse cx="295" cy="150" rx="8" ry="12" fill="none" stroke="#374151" stroke-width="3"/>
+  <path d="M290 145 L305 135" stroke="#ef4444" stroke-width="4"/>
+  
+  <!-- Title Area -->
+  <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+  <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Safe Investing: Avoid Ponzi</text>
+  <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Schemes &amp; Double Money Scams</text>
+</svg>

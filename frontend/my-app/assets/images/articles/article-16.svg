@@ -1,0 +1,56 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient16" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="url(#bgGradient16)"/>
+  
+  <!-- RBI Building -->
+  <rect x="160" y="70" width="80" height="50" fill="#ffffff" opacity="0.95"/>
+  <rect x="170" y="50" width="60" height="20" fill="#1e40af"/>
+  <text x="200" y="62" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">RBI</text>
+  
+  <!-- Rights Document -->
+  <rect x="100" y="80" width="50" height="70" fill="#ffffff" opacity="0.95" rx="4"/>
+  <rect x="105" y="90" width="40" height="4" fill="#1e40af"/>
+  <rect x="105" y="98" width="35" height="3" fill="#6b7280"/>
+  <rect x="105" y="105" width="37" height="3" fill="#6b7280"/>
+  <rect x="105" y="112" width="32" height="3" fill="#6b7280"/>
+  <rect x="105" y="119" width="38" height="3" fill="#6b7280"/>
+  
+  <!-- Customer Protection Shield -->
+  <path d="M250 80 L280 80 Q290 80 290 90 L290 120 Q290 130 280 135 L265 145 L250 135 Q240 130 240 120 L240 90 Q240 80 250 80 Z" fill="#10b981"/>
+  <path d="M250 95 L265 105 L280 95" stroke="#ffffff" stroke-width="3" fill="none"/>
+  
+  <!-- Banking Services Icons -->
+  <circle cx="120" cy="160" r="12" fill="#ffffff" opacity="0.9"/>
+  <text x="120" y="165" text-anchor="middle" fill="#1e40af" font-family="Arial" font-size="10" font-weight="bold">₹</text>
+  
+  <circle cx="150" cy="160" r="12" fill="#ffffff" opacity="0.9"/>
+  <rect x="145" y="156" width="10" height="8" fill="#10b981"/>
+  
+  <circle cx="180" cy="160" r="12" fill="#ffffff" opacity="0.9"/>
+  <rect x="176" y="158" width="8" height="4" fill="#3b82f6"/>
+  <rect x="176" y="164" width="8" height="2" fill="#3b82f6"/>
+  
+  <!-- Rights Symbols -->
+  <circle cx="320" cy="100" r="15" fill="#fbbf24"/>
+  <text x="320" y="105" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">R</text>
+  
+  <circle cx="320" cy="130" r="15" fill="#10b981"/>
+  <path d="M315 130 L318 133 L325 126" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Student Icon -->
+  <circle cx="80" cy="110" r="12" fill="#ffffff" opacity="0.9"/>
+  <rect x="72" y="122" width="16" height="20" fill="#ffffff" opacity="0.9"/>
+  <rect x="74" y="125" width="12" height="3" fill="#1e40af"/>
+  
+  <!-- Title Area -->
+  <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+  <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Your Rights as Banking Customer:</text>
+  <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">What RBI Guarantees You</text>
+</svg>

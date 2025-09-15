@@ -13,10 +13,21 @@ config.transformer.minifierConfig = {
     keep_classnames: true,
     keep_fnames: true,
   },
+  compress: {
+    drop_console: false,
+    drop_debugger: false
+  }
 };
 
-// Make source maps more reliable
-config.transformer.sourceMap = true;
+// Completely disable source maps - this will fix the <anonymous> file errors
+config.transformer.sourceMap = false;
+config.transformer.inlineRequires = false;
+
+// Improved error handling
+config.reporter = {
+  ...config.reporter,
+  update: () => {}
+};
 
 // Add blacklist for problematic modules
 config.resolver.blockList = [

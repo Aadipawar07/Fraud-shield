@@ -1,0 +1,38 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient8" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fc7c7c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9bb5ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="url(#bgGradient8)"/>
+  
+  <!-- Document/KYC Form -->
+  <rect x="140" y="50" width="120" height="140" fill="#ffffff" opacity="0.95" rx="8"/>
+  <rect x="150" y="70" width="100" height="8" fill="#d1d5db"/>
+  <rect x="150" y="85" width="80" height="6" fill="#d1d5db"/>
+  <rect x="150" y="100" width="90" height="6" fill="#d1d5db"/>
+  
+  <!-- Person Icon -->
+  <circle cx="180" cy="130" r="15" fill="#6b7280"/>
+  <rect x="170" y="145" width="20" height="25" fill="#6b7280"/>
+  
+  <!-- Checkmark -->
+  <circle cx="320" cy="80" r="20" fill="#10b981"/>
+  <path d="M315 80 L318 83 L325 76" stroke="white" stroke-width="3" fill="none"/>
+  
+  <!-- ID Card -->
+  <rect x="60" y="100" width="60" height="40" fill="#ffffff" opacity="0.9" rx="4"/>
+  <rect x="65" y="105" width="15" height="15" fill="#6b7280"/>
+  <rect x="85" y="107" width="30" height="3" fill="#d1d5db"/>
+  <rect x="85" y="113" width="25" height="3" fill="#d1d5db"/>
+  <rect x="65" y="125" width="50" height="3" fill="#1e40af"/>
+  <rect x="65" y="131" width="40" height="3" fill="#1e40af"/>
+  
+  <!-- Title Area -->
+  <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+  <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Understanding KYC</text>
+  <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Requirements</text>
+</svg>

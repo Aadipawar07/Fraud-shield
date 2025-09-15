@@ -1,0 +1,13 @@
+@echo off
+echo Clearing Metro cache...
+rd /s /q node_modules\.cache
+rd /s /q %TEMP%\metro-cache
+rd /s /q %APPDATA%\Temp\metro-cache
+echo Clearing Watchman watches...
+watchman watch-del-all 2>nul || echo Watchman not installed or not in PATH
+echo Deleting node_modules...
+rd /s /q node_modules
+echo Reinstalling dependencies...
+npm install
+echo Cache cleared successfully!
+echo Run "npm run web" to restart your app

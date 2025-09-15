@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to PNG Converter</title>
+    <style>
+        .svg-container {
+            margin: 20px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Article Images - SVG to PNG Converter</h1>
+    <p>Open this file in a browser and use browser tools to save the SVGs as PNG files.</p>
+    
+    <!-- Article 6: Protecting Seniors -->
+    <div class="svg-container">
+        <h3>Article 6: Protecting Seniors from Financial Fraud</h3>
+        <svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="bgGradient6" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="400" height="240" fill="url(#bgGradient6)"/>
+            <circle cx="120" cy="100" r="25" fill="#ffffff" opacity="0.9"/>
+            <path d="M95 125 Q95 115 105 115 L135 115 Q145 115 145 125 L145 150 Q145 160 135 160 L105 160 Q95 160 95 150 Z" fill="#ffffff" opacity="0.9"/>
+            <path d="M180 60 L220 60 Q230 60 230 70 L230 120 Q230 140 220 150 L200 170 L180 150 Q170 140 170 120 L170 70 Q170 60 180 60 Z" fill="#4ade80" opacity="0.95"/>
+            <path d="M180 75 L200 90 L220 75" stroke="#ffffff" stroke-width="3" fill="none"/>
+            <circle cx="280" cy="80" r="15" fill="#ef4444"/>
+            <text x="280" y="85" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
+            <rect x="300" y="120" width="35" height="50" rx="8" fill="#ffffff" opacity="0.9"/>
+            <rect x="305" y="125" width="25" height="35" fill="#1f2937"/>
+            <circle cx="317" cy="165" r="3" fill="#1f2937"/>
+            <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+            <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Protecting Seniors from</text>
+            <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Financial Fraud</text>
+        </svg>
+    </div>
+
+    <!-- Instructions -->
+    <div style="margin: 20px; padding: 20px; background: #f0f0f0; border-radius: 8px;">
+        <h3>Instructions to Convert SVG to PNG:</h3>
+        <ol>
+            <li>Right-click on each SVG image above</li>
+            <li>Select "Inspect Element" or "Inspect"</li>
+            <li>Find the &lt;svg&gt; element in the DOM</li>
+            <li>Right-click on the SVG element and choose "Copy" → "Copy outerHTML"</li>
+            <li>Use an online SVG to PNG converter or save the SVG file and convert it</li>
+            <li>Save the PNG files as article-6.png, article-7.png, etc. in the articles folder</li>
+        </ol>
+        <p><strong>Alternative:</strong> Use a tool like Chrome DevTools to capture screenshots of each SVG at the exact 400x240 dimensions.</p>
+    </div>
+
+    <script>
+        // Function to download SVG as PNG
+        function downloadSVGAsPNG(svgElement, filename) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const data = new XMLSerializer().serializeToString(svgElement);
+            const DOMURL = window.URL || window.webkitURL || window;
+            const img = new Image();
+            const svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+            const url = DOMURL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                canvas.width = 400;
+                canvas.height = 240;
+                ctx.drawImage(img, 0, 0);
+                DOMURL.revokeObjectURL(url);
+                
+                const imgURI = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = imgURI;
+                link.click();
+            };
+            
+            img.src = url;
+        }
+    </script>
+</body>
+</html>

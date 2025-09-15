@@ -1,0 +1,51 @@
+<svg width="400" height="240" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient12" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="240" fill="url(#bgGradient12)"/>
+  
+  <!-- Laptop/Computer -->
+  <rect x="140" y="70" width="120" height="80" fill="#374151" rx="8"/>
+  <rect x="150" y="80" width="100" height="60" fill="#1e40af"/>
+  <rect x="180" y="155" width="40" height="15" fill="#374151"/>
+  
+  <!-- Scammer Icons on Screen -->
+  <circle cx="175" cy="105" r="8" fill="#ef4444"/>
+  <text x="175" y="109" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">$</text>
+  
+  <circle cx="200" cy="105" r="8" fill="#ef4444"/>
+  <text x="200" y="109" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">!</text>
+  
+  <circle cx="225" cy="105" r="8" fill="#ef4444"/>
+  <text x="225" y="109" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">?</text>
+  
+  <!-- Phishing Hook -->
+  <path d="M100 50 Q110 40 120 50 L120 80 Q120 90 110 90 L100 90" stroke="#ef4444" stroke-width="4" fill="none"/>
+  <circle cx="95" cy="50" r="4" fill="#ef4444"/>
+  
+  <path d="M300 50 Q290 40 280 50 L280 80 Q280 90 290 90 L300 90" stroke="#ef4444" stroke-width="4" fill="none"/>
+  <circle cx="305" cy="50" r="4" fill="#ef4444"/>
+  
+  <!-- Target/Victim -->
+  <circle cx="200" cy="180" r="20" fill="#ffffff" opacity="0.9"/>
+  <circle cx="200" cy="180" r="15" fill="none" stroke="#ef4444" stroke-width="2"/>
+  <circle cx="200" cy="180" r="10" fill="none" stroke="#ef4444" stroke-width="2"/>
+  <circle cx="200" cy="180" r="5" fill="#ef4444"/>
+  
+  <!-- Warning Signs -->
+  <polygon points="60,120 80,120 70,140" fill="#fbbf24"/>
+  <text x="70" y="135" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
+  
+  <polygon points="320,120 340,120 330,140" fill="#fbbf24"/>
+  <text x="330" y="135" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
+  
+  <!-- Title Area -->
+  <rect x="20" y="190" width="360" height="40" fill="rgba(255,255,255,0.1)" rx="8"/>
+  <text x="200" y="208" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Digital Fraud 101:</text>
+  <text x="200" y="224" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Common Scammer Tricks</text>
+</svg>

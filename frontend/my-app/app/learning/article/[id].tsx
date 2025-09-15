@@ -19,6 +19,32 @@ const getArticleImage = (id: string) => {
       return require('../../../assets/images/articles/article-4.png');
     case 'a5':
       return require('../../../assets/images/articles/article-5.png');
+    case 'a6':
+      return require('../../../assets/images/articles/article-6.svg');
+    case 'a7':
+      return require('../../../assets/images/articles/article-7.svg');
+    case 'a8':
+      return require('../../../assets/images/articles/article-8.svg');
+    case 'a9':
+      return require('../../../assets/images/articles/article-9.svg');
+    case 'a10':
+      return require('../../../assets/images/articles/article-10.svg');
+    case 'a11':
+      return require('../../../assets/images/articles/article-11.svg');
+    case 'a12':
+      return require('../../../assets/images/articles/article-12.svg');
+    case 'a13':
+      return require('../../../assets/images/articles/article-13.svg');
+    case 'a14':
+      return require('../../../assets/images/articles/article-14.svg');
+    case 'a15':
+      return require('../../../assets/images/articles/article-15.svg');
+    case 'a16':
+      return require('../../../assets/images/articles/article-16.svg');
+    case 'a17':
+      return require('../../../assets/images/articles/article-17.svg');
+    case 'a18':
+      return require('../../../assets/images/articles/article-18.svg');
     default:
       // Default image if no match
       return require('../../../assets/images/articles/article-1.png');
