@@ -58,6 +58,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="scan"
+        options={{
+          title: "Enhanced Test",
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="shield-checkmark" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="verify"
         options={{
           title: "Verify",

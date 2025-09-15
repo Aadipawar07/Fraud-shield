@@ -2,8 +2,10 @@ import { Stack } from "expo-router";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider } from "../context/ThemeContext";
+import { LanguageProvider } from "../context/LanguageContext";
 // import "./global.css"; // Temporarily disabled for bundling fix
 import "./uuid-fix"; // Import crypto polyfill for UUID
+import "../i18n"; // Initialize i18n
 
 export default function Layout() {
   return (

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, type ViewProps, ViewStyle, Animated, StyleProp } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { Shadow } from "@/constants/Shape";
-import { useTheme } from "@/context/ThemeContext";
+import { useThemeColor } from "../hooks/useThemeColor";
+import { Shadow } from "../constants/Shape";
+import { useTheme } from "../context/ThemeContext";
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;

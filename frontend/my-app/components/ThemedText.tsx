@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { Text, type TextProps, Animated } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { getTypography } from "@/constants/Typography";
-import { useTheme } from "@/context/ThemeContext";
+import { useThemeColor } from "../hooks/useThemeColor";
+import { getTypography } from "../constants/Typography";
+import { useTheme } from "../context/ThemeContext";
 
 export type ThemedTextVariant = 
   | "display"
